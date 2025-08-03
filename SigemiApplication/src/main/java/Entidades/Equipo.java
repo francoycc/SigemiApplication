@@ -1,5 +1,6 @@
 package Entidades;
 
+import Entidades.Enums.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,7 +37,6 @@ public class Equipo {
 
     private Boolean activo;
 
-    // Relación con Ubicación Técnica (muchos a uno)
     @ManyToOne
     @JoinColumn(name = "idUbicacion")
     private UbicacionTecnica ubicacionTecnica;
