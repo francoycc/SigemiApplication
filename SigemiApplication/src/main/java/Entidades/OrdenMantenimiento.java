@@ -46,7 +46,7 @@ public class OrdenMantenimiento {
     @JoinColumn(name = "id_equipo", nullable = false)
     private Equipo equipo;
 
-    // Asociación con el supervisor que creó la orden (usuario con rol supervisor)
+    // Asociacion con el supervisor que creo la orden
     @ManyToOne
     @JoinColumn(name = "id_supervisor")
     private Usuario supervisor;
