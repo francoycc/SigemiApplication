@@ -1,6 +1,6 @@
 
 package Entidades;
 
-class UsoRepuesto {
+public class UsoRepuesto {
     
 }

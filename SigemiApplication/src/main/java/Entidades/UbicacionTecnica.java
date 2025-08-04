@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-class UbicacionTecnica {
+public class UbicacionTecnica {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idUbicacion;

@@ -16,8 +16,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-class TareaMantenimiento {
-     @Id
+public class TareaMantenimiento {
+    
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idTarea;
 
@@ -37,9 +38,9 @@ class TareaMantenimiento {
 
     private Double tiempoInvertidoHoras;
 
-    // Relación con el técnico responsable
+    // Relacion con el tecnico responsable
     @ManyToOne
-    @JoinColumn(name = "id_tecnico", nullable = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario tecnico;
 
     // Relación con la orden de mantenimiento

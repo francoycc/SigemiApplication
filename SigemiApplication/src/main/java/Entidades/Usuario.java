@@ -1,6 +1,6 @@
 
 package Entidades;
 
-class Usuario {
+public class Usuario {
     
 }
