@@ -1,0 +1,14 @@
+
+package Service;
+
+import Entidades.OrdenMantenimiento;
+import java.util.List;
+
+
+public interface OrdenMantenimientoService {
+    OrdenMantenimiento crearOrdenMantenimiento(OrdenMantenimiento orden);
+    List<OrdenMantenimiento> listarOrdenes();
+    OrdenMantenimiento obtenerPorId(Long id);
+    OrdenMantenimiento actualizarOrdenMantenimiento(Long id, OrdenMantenimiento orden);
+    void finalizarOrdenMantenimiento(Long id);
+}

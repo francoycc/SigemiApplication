@@ -5,6 +5,7 @@ import Service.EquipoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/equipos")
@@ -23,12 +24,12 @@ public class EquipoControllers {
         return equipoService.listarEquipos();
     }
     
-    @GetMapping
+    @GetMapping("/{id}")
     public Equipo buscarPorId(@PathVariable Long id){
         return equipoService.obtenerPorId(id);
     }
     
-    @PutMapping
+    @GetMapping("/{id}")
     public Equipo actualizar(@PathVariable Long id, @RequestBody Equipo equipo){
         return equipoService.actualizarEquipo(id, equipo);
     }
@@ -36,5 +37,10 @@ public class EquipoControllers {
     @DeleteMapping("/{id}")
     public void deshabilitar(@PathVariable Long id){
         equipoService.deshabilitarEquipo(id);
+    }
+    
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Error message")
+    public void handleError() {
     }
 }
