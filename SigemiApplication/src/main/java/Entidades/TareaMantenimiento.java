@@ -1,0 +1,6 @@
+
+package Entidades;
+
+class TareaMantenimiento {
+    
+}
