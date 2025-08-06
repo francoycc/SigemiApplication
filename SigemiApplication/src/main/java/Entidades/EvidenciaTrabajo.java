@@ -17,19 +17,19 @@ public class EvidenciaTrabajo {
     private Long idEvidencia;
 
     @Column(nullable = false)
-    private String tipoArchivo; // Ej: "imagen", "pdf", "texto"
+    private String tipoArchivo; 
 
     @Column(nullable = false)
-    private String nombreArchivo; // Nombre original del archivo
+    private String nombreArchivo;
 
     @Column(length = 1000)
-    private String descripcion; // Descripción breve de lo evidenciado
-
+    private String descripcion; 
+    
+    @Column(length = 50)
+    private String urlArchivo;
+    
     // Asociacion con la tarea que genero esta evidencia
     @ManyToOne
     @JoinColumn(name = "id_tarea", nullable = false)
     private TareaMantenimiento tarea;
-    
-    @Column(nullable = false)
-    private String urlArchivo;
 }
