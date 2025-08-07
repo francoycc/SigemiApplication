@@ -29,7 +29,7 @@ public class EquipoControllers {
         return equipoService.obtenerPorId(id);
     }
     
-    @GetMapping("/{id}")
+    @PutMapping("/{id}")
     public Equipo actualizar(@PathVariable Long id, @RequestBody Equipo equipo){
         return equipoService.actualizarEquipo(id, equipo);
     }

@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UbicacionTecnicaRepository extends JpaRepository<UbicacionTecnica, Long> {
     Boolean existsByCodigo(String codigo);
-    List<UbicacionTecnica> findByUbicacionTecnicaPadre(Long idUbicacionTecnicaPadre);
+    List<UbicacionTecnica> findByUbicacionPadre_IdUbicacion(Long idUbicacionTecnicaPadre);
 }

@@ -24,7 +24,7 @@ public class TareaMantenimientoServiceImpl implements TareaMantenimientoService 
 
     @Override
     public List<TareaMantenimiento> listarPorOrden(Long idOrden) {
-        return tareaMantenimientoRepository.findByOrden(idOrden);
+        return tareaMantenimientoRepository.findByOrden_IdOrden(idOrden);
     }
 
     @Override

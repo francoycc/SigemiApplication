@@ -34,7 +34,7 @@ public class OrdenMantenimientoControllers {
         return ordenMantenimientoService.obtenerPorId(id);
     }
     
-    @GetMapping("/{id}")
+    @PutMapping("/{id}")
     public OrdenMantenimiento actualizar(@PathVariable Long id, @RequestBody OrdenMantenimiento orden){
         return ordenMantenimientoService.actualizarOrdenMantenimiento(id, orden);
     }

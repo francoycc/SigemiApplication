@@ -49,8 +49,7 @@ public class UbicacionTecnicaServiceImpl implements UbicacionTecnicaService {
 
     @Override
     public List<UbicacionTecnica> listarUbicacionesPorPadre(Long idPadre) {
-        UbicacionTecnica padre = obtenerPorId(idPadre);
-        return padre.getSubUbicaciones();
+        return ubicacionRepository.findByUbicacionPadre_IdUbicacion(idPadre);
     }
     
 }

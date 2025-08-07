@@ -19,7 +19,7 @@ public class EvidenciaTrabajoServiceImpl implements EvidenciaTrabajoService {
 
     @Override
     public List<EvidenciaTrabajo> listarPorTarea(Long idTarea) {
-        return EvidenciaRepository.findByTarea(idTarea);
+        return EvidenciaRepository.findByTarea_IdTarea(idTarea);
     }
     
 }
