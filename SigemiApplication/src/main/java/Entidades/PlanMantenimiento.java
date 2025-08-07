@@ -29,7 +29,7 @@ public class PlanMantenimiento {
     @Column(nullable = false)
     private LocalDate fechaInicio;
 
-    private boolean activo;
+    private Boolean activo;
 
     // Asociacion con el equipo al que aplica este plan
     @ManyToOne

@@ -54,7 +54,7 @@ public class OrdenMantenimiento {
     // Tecnicos asignados a la orden
     @ManyToMany
     @JoinTable(
-        name = "orden_tecnico",
+        name = "ordenTecnico",
         joinColumns = @JoinColumn(name = "id_orden"),
         inverseJoinColumns = @JoinColumn(name = "id_usuario")
     )
