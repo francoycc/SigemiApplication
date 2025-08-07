@@ -41,7 +41,7 @@ public class UbicacionTecnica {
     private List<UbicacionTecnica> subUbicaciones;
 
     // Relación con equipos
-    @OneToMany(mappedBy = "ubicacion", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "ubicacionTecnica", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Equipo> equipos;
 
     public boolean estaActiva() {

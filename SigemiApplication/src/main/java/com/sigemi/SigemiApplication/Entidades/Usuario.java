@@ -42,6 +42,6 @@ public class Usuario {
     
     private Boolean activo;
     
-    @OneToMany(mappedBy = "usuarioAsignado")
+    @OneToMany(mappedBy = "tecnico")
     private List<TareaMantenimiento> tareas;
 }

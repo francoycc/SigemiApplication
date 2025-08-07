@@ -40,12 +40,12 @@ public class TareaMantenimiento {
 
     // Relacion con el tecnico responsable
     @ManyToOne
-    @JoinColumn(name = "id_usuario", nullable = false)
+    @JoinColumn(name = "idUsuario", nullable = false)
     private Usuario tecnico;
 
     // Relación con la orden de mantenimiento
     @ManyToOne
-    @JoinColumn(name = "id_orden", nullable = false)
+    @JoinColumn(name = "idOrden", nullable = false)
     private OrdenMantenimiento orden;
 
     // Evidencias cargadas (texto, imagen, PDF, etc.)
