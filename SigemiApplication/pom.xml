@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.sigemi</groupId>
-    <artifactId>sigemi</artifactId>
+    <artifactId>SigemiApplication</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>sigemi</name>
+    <name>SigemiApplication</name>
     <description>Sistema de Gestión de Mantenimiento Industrial</description>
 
     <parent>
@@ -81,6 +81,12 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sigemi</groupId>
+            <artifactId>sigemi</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <type>jar</type>
         </dependency>
     </dependencies>
 
