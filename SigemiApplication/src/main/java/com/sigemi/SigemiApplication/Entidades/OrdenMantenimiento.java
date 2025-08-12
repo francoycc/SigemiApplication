@@ -8,10 +8,9 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
+
 @Entity
 @Table(name = "OrdenMantenimiento")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -76,5 +75,113 @@ public class OrdenMantenimiento {
     public boolean puedeFinalizarse() {
         return tareas != null && tareas.stream().allMatch(t -> t.getEstado().equals(EstadoTarea.COMPLETADA));
     }*/
+
+    public Long getIdOrden() {
+        return idOrden;
+    }
+
+    public void setIdOrden(Long idOrden) {
+        this.idOrden = idOrden;
+    }
+
+    public String getCodigoOrden() {
+        return codigoOrden;
+    }
+
+    public void setCodigoOrden(String codigoOrden) {
+        this.codigoOrden = codigoOrden;
+    }
+
+    public TipoMantenimiento getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoMantenimiento tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getPrioridad() {
+        return prioridad;
+    }
+
+    public void setPrioridad(String prioridad) {
+        this.prioridad = prioridad;
+    }
+
+    public LocalDate getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDate fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public LocalDate getFechaFin() {
+        return fechaFin;
+    }
+
+    public void setFechaFin(LocalDate fechaFin) {
+        this.fechaFin = fechaFin;
+    }
+
+    public EstadoOrden getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoOrden estado) {
+        this.estado = estado;
+    }
+
+    public Equipo getEquipo() {
+        return equipo;
+    }
+
+    public void setEquipo(Equipo equipo) {
+        this.equipo = equipo;
+    }
+
+    public Usuario getSupervisor() {
+        return supervisor;
+    }
+
+    public void setSupervisor(Usuario supervisor) {
+        this.supervisor = supervisor;
+    }
+
+    public List<Usuario> getTecnicosAsignados() {
+        return tecnicosAsignados;
+    }
+
+    public void setTecnicosAsignados(List<Usuario> tecnicosAsignados) {
+        this.tecnicosAsignados = tecnicosAsignados;
+    }
+
+    public List<TareaMantenimiento> getTareas() {
+        return tareas;
+    }
+
+    public void setTareas(List<TareaMantenimiento> tareas) {
+        this.tareas = tareas;
+    }
+
+    public void addTarea(TareaMantenimiento tarea) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
     
 }

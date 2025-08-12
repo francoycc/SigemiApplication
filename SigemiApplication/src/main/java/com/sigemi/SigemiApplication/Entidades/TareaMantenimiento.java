@@ -11,8 +11,6 @@ import java.util.List;
 
 @Entity
 @Table(name = "TareaMantenimiento")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -51,4 +49,78 @@ public class TareaMantenimiento {
     // Evidencias cargadas (texto, imagen, PDF, etc.)
     @OneToMany(mappedBy = "tarea", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EvidenciaTrabajo> evidencias;
+
+    public Long getIdTarea() {
+        return idTarea;
+    }
+
+    public void setIdTarea(Long idTarea) {
+        this.idTarea = idTarea;
+    }
+
+    public TipoMantenimiento getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoMantenimiento tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public LocalDate getFechaEjecucion() {
+        return fechaEjecucion;
+    }
+
+    public void setFechaEjecucion(LocalDate fechaEjecucion) {
+        this.fechaEjecucion = fechaEjecucion;
+    }
+
+    public EstadoTarea getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoTarea estado) {
+        this.estado = estado;
+    }
+
+    public Double getTiempoInvertidoHoras() {
+        return tiempoInvertidoHoras;
+    }
+
+    public void setTiempoInvertidoHoras(Double tiempoInvertidoHoras) {
+        this.tiempoInvertidoHoras = tiempoInvertidoHoras;
+    }
+
+    public Usuario getTecnico() {
+        return tecnico;
+    }
+
+    public void setTecnico(Usuario tecnico) {
+        this.tecnico = tecnico;
+    }
+
+    public OrdenMantenimiento getOrden() {
+        return orden;
+    }
+
+    public void setOrden(OrdenMantenimiento orden) {
+        this.orden = orden;
+    }
+
+    public List<EvidenciaTrabajo> getEvidencias() {
+        return evidencias;
+    }
+
+    public void setEvidencias(List<EvidenciaTrabajo> evidencias) {
+        this.evidencias = evidencias;
+    }
+    
+    
 }

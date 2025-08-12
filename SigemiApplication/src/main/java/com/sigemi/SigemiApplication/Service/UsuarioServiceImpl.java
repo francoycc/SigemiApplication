@@ -4,15 +4,19 @@ import com.sigemi.SigemiApplication.Entidades.Usuario;
 import com.sigemi.SigemiApplication.Repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
 @Service
-@RequiredArgsConstructor
 public class UsuarioServiceImpl implements UsuarioService {
 
+    @Autowired
     private final UsuarioRepository usuarioRepository;
+    
+    public UsuarioServiceImpl(UsuarioRepository userRepository){
+        this.usuarioRepository = userRepository;
+    }
     
     @Override
     public Usuario crearUsuario(Usuario usuario) {

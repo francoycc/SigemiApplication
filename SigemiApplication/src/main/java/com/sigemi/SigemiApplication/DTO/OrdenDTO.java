@@ -3,10 +3,7 @@ package com.sigemi.SigemiApplication.DTO;
 import java.time.LocalDate;
 import java.util.List;
 import jakarta.validation.constraints.*;
-import lombok.*;
 
-@Getter
-@Setter
 public class OrdenDTO {
     private Long id;
     @NotNull
@@ -26,4 +23,73 @@ public class OrdenDTO {
 
     @NotEmpty
     private List<TareaDTO> tareas;
+    
+    @NotNull
+    private String prioridad;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public Long getEquipoId() {
+        return equipoId;
+    }
+
+    public void setEquipoId(Long equipoId) {
+        this.equipoId = equipoId;
+    }
+
+    public Long getSupervisorId() {
+        return supervisorId;
+    }
+
+    public void setSupervisorId(Long supervisorId) {
+        this.supervisorId = supervisorId;
+    }
+
+    public LocalDate getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDate fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public LocalDate getFechaPrevistaEjecucion() {
+        return fechaPrevistaEjecucion;
+    }
+
+    public void setFechaPrevistaEjecucion(LocalDate fechaPrevistaEjecucion) {
+        this.fechaPrevistaEjecucion = fechaPrevistaEjecucion;
+    }
+
+    public List<TareaDTO> getTareas() {
+        return tareas;
+    }
+
+    public void setTareas(List<TareaDTO> tareas) {
+        this.tareas = tareas;
+    }
+
+    public String getPrioridad() {
+        return prioridad;
+    }
+
+    public void setPrioridad(String prioridad) {
+        this.prioridad = prioridad;
+    }
+    
+    
 }

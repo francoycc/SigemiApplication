@@ -5,8 +5,6 @@ import lombok.*;
 
 @Entity
 @Table(name = "EvidenciaTrabajo")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -32,4 +30,52 @@ public class EvidenciaTrabajo {
     @ManyToOne
     @JoinColumn(name = "id_tarea", nullable = false)
     private TareaMantenimiento tarea;
+
+    public Long getIdEvidencia() {
+        return idEvidencia;
+    }
+
+    public void setIdEvidencia(Long idEvidencia) {
+        this.idEvidencia = idEvidencia;
+    }
+
+    public String getTipoArchivo() {
+        return tipoArchivo;
+    }
+
+    public void setTipoArchivo(String tipoArchivo) {
+        this.tipoArchivo = tipoArchivo;
+    }
+
+    public String getNombreArchivo() {
+        return nombreArchivo;
+    }
+
+    public void setNombreArchivo(String nombreArchivo) {
+        this.nombreArchivo = nombreArchivo;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getUrlArchivo() {
+        return urlArchivo;
+    }
+
+    public void setUrlArchivo(String urlArchivo) {
+        this.urlArchivo = urlArchivo;
+    }
+
+    public TareaMantenimiento getTarea() {
+        return tarea;
+    }
+
+    public void setTarea(TareaMantenimiento tarea) {
+        this.tarea = tarea;
+    }
 }

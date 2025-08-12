@@ -5,14 +5,18 @@ import com.sigemi.SigemiApplication.Enums.EstadoOperativo;
 import com.sigemi.SigemiApplication.Repository.EquipoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class EquipoServiceImpl implements EquipoService {
 
+    @Autowired
     private final EquipoRepository equipoRepository;
+    
+    public EquipoServiceImpl(EquipoRepository equipoRepo){
+        this.equipoRepository = equipoRepo;
+    }
     
     @Override
     public Equipo crearEquipo(Equipo equipo) {

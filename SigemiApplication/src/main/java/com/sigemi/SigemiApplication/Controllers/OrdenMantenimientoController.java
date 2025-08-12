@@ -1,13 +1,11 @@
 
 package com.sigemi.SigemiApplication.Controllers;
 
-import com.sigemi.SigemiApplication.Entidades.Equipo;
 import com.sigemi.SigemiApplication.Entidades.OrdenMantenimiento;
 import com.sigemi.SigemiApplication.Service.OrdenMantenimientoService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
@@ -15,10 +13,15 @@ import org.springframework.http.HttpStatus;
 @RestController
 @RequestMapping("/api/ordenes")
 @RequiredArgsConstructor
-public class OrdenMantenimientoControllers {
+public class OrdenMantenimientoController {
     
+    @Autowired
     private final OrdenMantenimientoService ordenMantenimientoService;
-
+    
+    public OrdenMantenimientoController(OrdenMantenimientoService ordenMantenimientoService){
+        this.ordenMantenimientoService = ordenMantenimientoService;
+    }
+    
     @PostMapping
     public OrdenMantenimiento crear(@RequestBody OrdenMantenimiento orden){
         return ordenMantenimientoService.crearOrdenMantenimiento(orden);

@@ -4,17 +4,20 @@ package com.sigemi.SigemiApplication.Controllers;
 import com.sigemi.SigemiApplication.Entidades.EvidenciaTrabajo;
 import com.sigemi.SigemiApplication.Service.EvidenciaTrabajoService;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/evidencias")
-@RequiredArgsConstructor
 public class EvidenciaTrabajoController {
 
+    @Autowired
     private final EvidenciaTrabajoService evidenciaService;
 
+    public EvidenciaTrabajoController(EvidenciaTrabajoService etService){
+        this.evidenciaService = etService;
+    }
     @PostMapping
     public EvidenciaTrabajo crear(@RequestBody EvidenciaTrabajo evidencia) {
         return evidenciaService.crearEvidencia(evidencia);

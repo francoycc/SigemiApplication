@@ -5,17 +5,21 @@ import com.sigemi.SigemiApplication.Entidades.UbicacionTecnica;
 import com.sigemi.SigemiApplication.Service.UbicacionTecnicaService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
 
 @RestController
 @RequestMapping("/api/ubicaciones")
-@RequiredArgsConstructor
 public class UbicacionTecnicaController {
     
+    @Autowired
     private final UbicacionTecnicaService ubicacionService;
 
+    public UbicacionTecnicaController(UbicacionTecnicaService uService){
+        this.ubicacionService = uService;
+    }
     @PostMapping
     public UbicacionTecnica crear(@RequestBody UbicacionTecnica ubicacion) {
         return ubicacionService.crearUbicacion(ubicacion);

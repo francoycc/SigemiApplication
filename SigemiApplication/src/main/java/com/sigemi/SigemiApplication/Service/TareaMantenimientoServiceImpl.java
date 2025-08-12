@@ -1,21 +1,24 @@
 
 package com.sigemi.SigemiApplication.Service;
 
-import org.springframework.stereotype.Service;
 import com.sigemi.SigemiApplication.Entidades.TareaMantenimiento;
 import com.sigemi.SigemiApplication.Enums.EstadoTarea;
 import com.sigemi.SigemiApplication.Repository.TareaMantenimientoRepository;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class TareaMantenimientoServiceImpl implements TareaMantenimientoService {
 
+    @Autowired
     private final TareaMantenimientoRepository tareaMantenimientoRepository;
+    
+    public TareaMantenimientoServiceImpl(TareaMantenimientoRepository tareaMantenimientoRepo){
+        this.tareaMantenimientoRepository = tareaMantenimientoRepo;
+    }
+    
     @Override
     public TareaMantenimiento crearTarea(TareaMantenimiento tarea) {
         tarea.setEstado(EstadoTarea.Creada);

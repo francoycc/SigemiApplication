@@ -3,18 +3,20 @@ package com.sigemi.SigemiApplication.Controllers;
 import com.sigemi.SigemiApplication.Entidades.Usuario;
 import com.sigemi.SigemiApplication.Service.UsuarioService;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.ui.Model;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/usuarios")
-@RequiredArgsConstructor
 public class UsuarioController {
     
+    @Autowired
     private final UsuarioService usuarioService;
     
+    public UsuarioController(UsuarioService userService){
+        this.usuarioService = userService;
+    }
     @PostMapping
     public Usuario crear(@RequestBody Usuario usuario) {
         return usuarioService.crearUsuario(usuario);

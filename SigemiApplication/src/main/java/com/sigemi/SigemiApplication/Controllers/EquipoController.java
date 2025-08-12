@@ -2,17 +2,20 @@ package com.sigemi.SigemiApplication.Controllers;
 
 import com.sigemi.SigemiApplication.Entidades.Equipo;
 import com.sigemi.SigemiApplication.Service.EquipoService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/equipos")
-@RequiredArgsConstructor
-public class EquipoControllers {
-    
+public class EquipoController {
+    @Autowired
     private final EquipoService equipoService;
+    
+    public EquipoController(EquipoService eService){
+        this.equipoService = eService;
+    }
 
     @PostMapping
     public Equipo crear(@RequestBody Equipo equipo){

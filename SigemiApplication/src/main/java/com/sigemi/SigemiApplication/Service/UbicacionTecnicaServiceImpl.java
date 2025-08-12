@@ -5,14 +5,19 @@ import com.sigemi.SigemiApplication.Enums.EstadoOperativo;
 import com.sigemi.SigemiApplication.Repository.UbicacionTecnicaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class UbicacionTecnicaServiceImpl implements UbicacionTecnicaService {
 
+    @Autowired
     private final UbicacionTecnicaRepository ubicacionRepository;
+    
+    public UbicacionTecnicaServiceImpl(UbicacionTecnicaRepository ubiRepository){
+        this.ubicacionRepository = ubiRepository;
+    }
+    
     @Override
     public UbicacionTecnica crearUbicacion(UbicacionTecnica ubicacion) {
         ubicacion.setEstado(EstadoOperativo.Operativo);

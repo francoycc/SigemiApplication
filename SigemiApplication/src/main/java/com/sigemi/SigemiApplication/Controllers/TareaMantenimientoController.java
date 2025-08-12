@@ -3,19 +3,22 @@ package com.sigemi.SigemiApplication.Controllers;
 
 import com.sigemi.SigemiApplication.Entidades.TareaMantenimiento;
 import com.sigemi.SigemiApplication.Service.TareaMantenimientoService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/tareas")
-@RequiredArgsConstructor
 public class TareaMantenimientoController {
 
+    @Autowired
     private final TareaMantenimientoService tareaService;
 
+    public TareaMantenimientoController(TareaMantenimientoService tservice){
+        this.tareaService = tservice;
+    };
     @PostMapping
     public TareaMantenimiento crear(@RequestBody TareaMantenimiento tarea) {
         return tareaService.crearTarea(tarea);

@@ -1,25 +1,38 @@
 package com.sigemi.SigemiApplication.Service;
 
 import com.sigemi.SigemiApplication.DTO.OrdenDTO;
+import com.sigemi.SigemiApplication.DTO.TareaDTO;
+import com.sigemi.SigemiApplication.Entidades.Equipo;
 import com.sigemi.SigemiApplication.Entidades.OrdenMantenimiento;
+import com.sigemi.SigemiApplication.Entidades.TareaMantenimiento;
 import com.sigemi.SigemiApplication.Entidades.Usuario;
 import com.sigemi.SigemiApplication.Enums.EstadoOrden;
+import com.sigemi.SigemiApplication.Enums.EstadoTarea;
+import com.sigemi.SigemiApplication.Enums.TipoMantenimiento;
+import com.sigemi.SigemiApplication.Excepciones.*;
 import com.sigemi.SigemiApplication.Mapper.OrdenMapper;
 import com.sigemi.SigemiApplication.Repository.*;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService {
 
     private final OrdenMantenimientoRepository ordenRepository;
     private final EquipoRepository equipoRepository;
-    private final TareaMantenimientoRepository tareaRepository
-    private final UbicacionTecnicaRepository ubicacionRepository;
+    private final TareaMantenimientoRepository tareaRepository;
+    //private final UbicacionTecnicaRepository ubicacionRepository;
     private final UsuarioRepository usuarioRepository;
     private final OrdenMapper mapper;
+    private final ApplicationEventPublisher eventPublisher;
     
     @Autowired
     public OrdenMantenimientoServiceImpl(OrdenMantenimientoRepository ordenRepo,
@@ -33,6 +46,7 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
         this.usuarioRepository = usuarioRepo;
         this.equipoRepository = equipoRepo;
         this.mapper = mapper;
+        this.eventPublisher = eventPublisher;
     }
     
     @Override
@@ -75,56 +89,64 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
     @Override
     @Transactional
     public OrdenDTO crearOrden(OrdenDTO dto, String usuarioCreador) {
-        // validar supervisor
-        Usuario supervisor = usuarioRepo.findById(dto.getSupervisorId())
-            .orElseThrow(() -> new NotFoundException("Supervisor no encontrado"));
+        
+        // Validar supervisor
+        Usuario supervisor = usuarioRepository.findById(dto.getSupervisorId())
+            .orElseThrow(() -> new EntityNotFoundException("Supervisor no encontrado"));
 
-        if (!"SUPERVISOR".equalsIgnoreCase(supervisor.getRol())) {
-            throw new BusinessException("Usuario no tiene rol de supervisor");
+        if (!"SUPERVISOR".equalsIgnoreCase(supervisor.getRol().toString())) {
+            try {
+                throw new BusinessException("Usuario no tiene rol de supervisor");
+            } catch (BusinessException ex) {
+                Logger.getLogger(OrdenMantenimientoServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
-        Equipo equipo = equipoRepo.findById(dto.getEquipoId())
-            .orElseThrow(() -> new NotFoundException("Equipo no encontrado"));
+        Equipo equipo = equipoRepository.findById(dto.getEquipoId())
+            .orElseThrow(() -> new EntityNotFoundException("Equipo no encontrado"));
 
-        // crear orden
+        // Crear oden
         OrdenMantenimiento orden = new OrdenMantenimiento();
-        orden.setTipo(dto.getTipo());
+        
+        orden.setTipo(TipoMantenimiento.valueOf(dto.getTipo()));
         orden.setEquipo(equipo);
         orden.setSupervisor(supervisor);
-        orden.setFechaCreacion(LocalDateTime.now());
-        orden.setFechaPrevistaEjecucion(dto.getFechaPrevistaEjecucion());
-        orden.setCreadoPor(usuarioQueCrea);
-        orden.setCreadoEn(LocalDateTime.now());
+        orden.setFechaCreacion(LocalDate.now());
+        orden.setFechaFin(dto.getFechaPrevistaEjecucion());
+        orden.setPrioridad(dto.getPrioridad());
 
         // crear tareas y asociar
-        for (TareaCreateDTO tDto : dto.getTareas()) {
-            Usuario tecnico = usuarioRepo.findById(tDto.getTecnicoId())
-                .orElseThrow(() -> new NotFoundException("Técnico no encontrado: " + tDto.getTecnicoId()));
+        for (TareaDTO tareaDto : dto.getTareas()) {
+            Usuario tecnico = usuarioRepository.findById(tareaDto.getTecnicoId())
+                    .orElseThrow(()-> new EntityNotFoundException("Tecnico no encontrado"+ tareaDto.getTecnicoId()));
 
-            if (!"TECNICO".equalsIgnoreCase(tecnico.getRol())) {
-                throw new BusinessException("Usuario no es técnico: " + tecnico.getId());
+            if (!"TECNICO".equalsIgnoreCase(tecnico.getRol().toString())) {
+                try {
+                    throw new BusinessException("Usuario no es técnico: " + tecnico.getIdUsuario());
+                } catch (BusinessException ex) {
+                    Logger.getLogger(OrdenMantenimientoServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
 
             TareaMantenimiento tarea = new TareaMantenimiento();
-            tarea.setDescripcion(tDto.getDescripcion());
-            tarea.setEstado("PENDIENTE");
+            tarea.setDescripcion(tareaDto.getDescripcion());
+            tarea.setEstado(EstadoTarea.valueOf(tareaDto.getEstado()));
             tarea.setTecnico(tecnico);
-            tarea.setFechaCreacion(LocalDateTime.now());
-            tarea.setCreadoPor(usuarioQueCrea);
+            tarea.setFechaEjecucion(LocalDate.now());
 
             // agrega y setea la relación bidireccional
             orden.addTarea(tarea);
         }
 
-        // persistir (cascade guardará tareas)
-        OrdenMantenimiento ordenGuardada = ordenRepo.save(orden);
+        // persistir (cascade guardara tareas)
+        OrdenMantenimiento ordenGuardada = ordenRepository.save(orden);
 
-        // publicar evento para acciones asíncronas (notificaciones, sync SAP, calendar)
-        eventPublisher.publishEvent(new OrdenCreadaEvent(this, ordenGuardada.getId()));
+        // publicar evento para acciones asincronas 
+        //eventPublisher.publishEvent(new OrdenCreadaEvent(this, ordenGuardada.getId()));
 
         // mapear respuesta
-        OrdenResponseDTO resp = mapper.toDto(ordenGuardada);
-        List<TareaResponseDTO> tareasDto = ordenGuardada.getTareas().stream()
+        OrdenDTO resp = mapper.toDto(ordenGuardada);
+        List<TareaDTO> tareasDto = ordenGuardada.getTareas().stream()
             .map(mapper::tareaToDto)
             .collect(Collectors.toList());
         resp.setTareas(tareasDto);

@@ -9,8 +9,6 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "UbicacionTecnica")
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -44,10 +42,75 @@ public class UbicacionTecnica {
     @OneToMany(mappedBy = "ubicacionTecnica", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Equipo> equipos;
 
+    public Long getIdUbicacion() {
+        return idUbicacion;
+    }
+
+    public void setIdUbicacion(Long idUbicacion) {
+        this.idUbicacion = idUbicacion;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public EstadoOperativo getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoOperativo estado) {
+        this.estado = estado;
+    }
+
+    public UbicacionTecnica getUbicacionPadre() {
+        return ubicacionPadre;
+    }
+
+    public void setUbicacionPadre(UbicacionTecnica ubicacionPadre) {
+        this.ubicacionPadre = ubicacionPadre;
+    }
+
+    public List<UbicacionTecnica> getSubUbicaciones() {
+        return subUbicaciones;
+    }
+
+    public void setSubUbicaciones(List<UbicacionTecnica> subUbicaciones) {
+        this.subUbicaciones = subUbicaciones;
+    }
+
+    public List<Equipo> getEquipos() {
+        return equipos;
+    }
+
+    public void setEquipos(List<Equipo> equipos) {
+        this.equipos = equipos;
+    }
+
+    
+    
     public boolean estaActiva() {
         return estado == EstadoOperativo.Operativo;
     }
-
     @Override
     public String toString() {
         return codigo + " - " + nombre;
