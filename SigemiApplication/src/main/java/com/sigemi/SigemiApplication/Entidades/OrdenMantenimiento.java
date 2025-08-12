@@ -29,6 +29,9 @@ public class OrdenMantenimiento {
 
     @Column(length = 1000)
     private String descripcion;
+    
+    @Column(length = 50)
+    private String prioridad;
 
     @Column(nullable = false)
     private LocalDate fechaCreacion;
