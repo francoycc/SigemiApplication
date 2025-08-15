@@ -5,5 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 public interface EquipoRepository extends JpaRepository<Equipo, Long> {
-    
+    boolean existsByCodigoEquipo(String codigoEquipo);
+    boolean existsByNumeroSerie(String numeroSerie);
 }

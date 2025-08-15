@@ -1,5 +1,6 @@
 package com.sigemi.SigemiApplication.Service;
 
+import com.sigemi.SigemiApplication.DTO.EquipoDTO;
 import com.sigemi.SigemiApplication.Entidades.Equipo;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -12,4 +13,5 @@ public interface EquipoService {
     Equipo obtenerPorId(Long id);
     Equipo actualizarEquipo(Long id, Equipo equipo);
     void deshabilitarEquipo(Long id);
+    EquipoDTO crearEquipo(EquipoDTO dto);
 }

@@ -1,13 +1,16 @@
 
 package com.sigemi.SigemiApplication.Controllers;
 
+import com.sigemi.SigemiApplication.DTO.OrdenDTO;
 import com.sigemi.SigemiApplication.Entidades.OrdenMantenimiento;
+import com.sigemi.SigemiApplication.Entidades.Usuario;
 import com.sigemi.SigemiApplication.Service.OrdenMantenimientoService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 
 @RestController
@@ -50,6 +53,12 @@ public class OrdenMantenimientoController {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Error message")
     public void handleError() {
+    }
+    
+    @PostMapping
+    public ResponseEntity<OrdenDTO> crearOrden(@RequestBody OrdenDTO dto, Usuario principal) {
+        OrdenDTO nuevaOrden = ordenMantenimientoService.crearOrden(dto, principal.getNombreUsuario());
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevaOrden);
     }
     
 }

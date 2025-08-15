@@ -95,25 +95,23 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
             .orElseThrow(() -> new EntityNotFoundException("Supervisor no encontrado"));
 
         if (!"SUPERVISOR".equalsIgnoreCase(supervisor.getRol().toString())) {
-            try {
-                throw new BusinessException("Usuario no tiene rol de supervisor");
-            } catch (BusinessException ex) {
-                Logger.getLogger(OrdenMantenimientoServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            throw new BusinessException("Usuario no tiene rol de supervisor");
         }
 
         Equipo equipo = equipoRepository.findById(dto.getEquipoId())
             .orElseThrow(() -> new EntityNotFoundException("Equipo no encontrado"));
 
         // Crear oden
-        OrdenMantenimiento orden = new OrdenMantenimiento();
+        OrdenMantenimiento orden = ordenRepository.save(new OrdenMantenimiento());
         
+        orden.setCodigoOrden("WO-"+ String.format("%03d", equipo.getIdEquipo()) + String.format("%03d", orden.getIdOrden()));
         orden.setTipo(TipoMantenimiento.valueOf(dto.getTipo()));
         orden.setEquipo(equipo);
         orden.setSupervisor(supervisor);
         orden.setFechaCreacion(LocalDate.now());
         orden.setFechaFin(dto.getFechaPrevistaEjecucion());
         orden.setPrioridad(dto.getPrioridad());
+        
 
         // crear tareas y asociar
         for (TareaDTO tareaDto : dto.getTareas()) {
@@ -121,11 +119,7 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
                     .orElseThrow(()-> new EntityNotFoundException("Tecnico no encontrado"+ tareaDto.getTecnicoId()));
 
             if (!"TECNICO".equalsIgnoreCase(tecnico.getRol().toString())) {
-                try {
-                    throw new BusinessException("Usuario no es técnico: " + tecnico.getIdUsuario());
-                } catch (BusinessException ex) {
-                    Logger.getLogger(OrdenMantenimientoServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                throw new BusinessException("Usuario no es técnico: " + tecnico.getIdUsuario());
             }
 
             TareaMantenimiento tarea = new TareaMantenimiento();
