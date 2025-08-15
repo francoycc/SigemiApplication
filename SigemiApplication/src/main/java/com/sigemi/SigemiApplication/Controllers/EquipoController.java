@@ -19,30 +19,30 @@ public class EquipoController {
         this.equipoService = eService;
     }
 
-    @PostMapping
-    public Equipo crear(@RequestBody Equipo equipo){
-        return equipoService.crearEquipo(equipo);
-    }
-    
-    @GetMapping
-    public List<Equipo> listar(){
-        return equipoService.listarEquipos();
-    }
-    
-    @GetMapping("/{id}")
-    public Equipo buscarPorId(@PathVariable Long id){
-        return equipoService.obtenerPorId(id);
-    }
-    
-    @PutMapping("/{id}")
-    public Equipo actualizar(@PathVariable Long id, @RequestBody Equipo equipo){
-        return equipoService.actualizarEquipo(id, equipo);
-    }
-    
-    @DeleteMapping("/{id}")
-    public void deshabilitar(@PathVariable Long id){
-        equipoService.deshabilitarEquipo(id);
-    }
+//    @PostMapping
+//    public Equipo crear(@RequestBody Equipo equipo){
+//        return equipoService.crearEquipo(equipo);
+//    }
+//    
+//    @GetMapping
+//    public List<Equipo> listar(){
+//        return equipoService.listarEquipos();
+//    }
+//    
+//    @GetMapping("/{id}")
+//    public Equipo buscarPorId(@PathVariable Long id){
+//        return equipoService.obtenerPorId(id);
+//    }
+//    
+//    @PutMapping("/{id}")
+//    public Equipo actualizar(@PathVariable Long id, @RequestBody Equipo equipo){
+//        return equipoService.actualizarEquipo(id, equipo);
+//    }
+//    
+//    @DeleteMapping("/{id}")
+//    public void deshabilitar(@PathVariable Long id){
+//        equipoService.deshabilitarEquipo(id);
+//    }
     
     @ExceptionHandler(Exception.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Error message")
@@ -53,5 +53,15 @@ public class EquipoController {
     public ResponseEntity<EquipoDTO> crearEquipo(@RequestBody EquipoDTO dto) {
         EquipoDTO nuevoEquipo = equipoService.crearEquipo(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoEquipo);
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<EquipoDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(equipoService.buscarPorId(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<EquipoDTO>> listarEquipos() {
+        return ResponseEntity.ok(equipoService.listarEquipos());
     }
 }
