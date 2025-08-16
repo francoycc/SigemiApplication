@@ -1,6 +1,7 @@
 
 package com.sigemi.SigemiApplication.Controllers;
 
+import com.sigemi.SigemiApplication.DTO.UbicacionTecnicaDTO;
 import com.sigemi.SigemiApplication.Entidades.UbicacionTecnica;
 import com.sigemi.SigemiApplication.Service.UbicacionTecnicaService;
 import java.util.List;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 
 @RestController
@@ -54,4 +56,33 @@ public class UbicacionTecnicaController {
     public void handleError() {
     }
     
+     
+    @PostMapping
+    public ResponseEntity<UbicacionTecnicaDTO> crearUbicacionTecnica(@RequestBody UbicacionTecnicaDTO dto) {
+        UbicacionTecnicaDTO nuevoUbicacion = ubicacionService.crearUbicacion(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoUbicacion);
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<UbicacionTecnicaDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(ubicacionService.obtenerPorId(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UbicacionTecnicaDTO>> listarUbicaciones() {
+        return ResponseEntity.ok(ubicacionService.listarUbicaciones());
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<UbicacionTecnicaDTO> actualizar(@PathVariable Long id, 
+            @RequestBody UbicacionTecnicaDTO dto) {
+        UbicacionTecnicaDTO actualizada = ubicacionService.actualizarUbicacion(id, dto);
+        return ResponseEntity.ok(actualizada);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> desactivar(@PathVariable Long id) {
+        ubicacionService.desactivarUbicacion(id);
+        return ResponseEntity.noContent().build();
+    }
 }

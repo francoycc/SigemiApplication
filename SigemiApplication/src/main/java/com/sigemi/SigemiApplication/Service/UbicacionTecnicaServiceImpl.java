@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UbicacionTecnicaServiceImpl implements UbicacionTecnicaService {
@@ -64,6 +65,7 @@ public class UbicacionTecnicaServiceImpl implements UbicacionTecnicaService {
 //    }
 
     @Override
+    @Transactional
     public UbicacionTecnicaDTO crearUbicacion(UbicacionTecnicaDTO dto) {
         // validar ubicacion
         if(ubicacionRepository.existsByCodigo(dto.getCodigo())){
@@ -84,6 +86,7 @@ public class UbicacionTecnicaServiceImpl implements UbicacionTecnicaService {
     }
 
     @Override
+    @Transactional
     public UbicacionTecnicaDTO obtenerPorId(Long id) {
         UbicacionTecnica ubicacion = ubicacionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Ubicacion Tecnica no encontrado con ID: " + id));
@@ -94,7 +97,10 @@ public class UbicacionTecnicaServiceImpl implements UbicacionTecnicaService {
     @Override
     public List<UbicacionTecnicaDTO> listarUbicaciones() {
         List<UbicacionTecnica> ubicaciones = ubicacionRepository.findAll();
-         
+        
+        if (ubicaciones.isEmpty()) {
+            System.out.println("No se encontraron equipos en la BD.");
+        }
         List<UbicacionTecnicaDTO> ubicacionesDto = ubicaciones.stream()
             .map(ubicacion -> mapper.toDTO(ubicacion))
             .collect(Collectors.toList());
@@ -103,8 +109,37 @@ public class UbicacionTecnicaServiceImpl implements UbicacionTecnicaService {
 
     @Override
     public List<UbicacionTecnicaDTO> listarUbicacionesPorPadre(Long idPadre) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        List<UbicacionTecnica> ubicaciones = ubicacionRepository.findByUbicacionPadre_IdUbicacion(idPadre);
+        if (ubicaciones.isEmpty()) {
+            System.out.println("No se encontraron equipos en la BD.");
+        }
+        List<UbicacionTecnicaDTO> ubicacionesDto = ubicaciones.stream()
+            .map(ubicacion -> mapper.toDTO(ubicacion))
+            .collect(Collectors.toList());
+        return ubicacionesDto;
     }
     
-    
+    @Override
+    @Transactional
+    public UbicacionTecnicaDTO actualizarUbicacion(Long id, UbicacionTecnicaDTO dto) {
+        UbicacionTecnica ubicacion = ubicacionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Ubicación no encontrada con ID: " + id));
+
+        ubicacion.setNombre(dto.getNombre());
+        ubicacion.setEstado(EstadoOperativo.valueOf(dto.getEstado()));
+        ubicacion.setTipo(dto.getTipo());
+        
+        UbicacionTecnica guardada = ubicacionRepository.save(ubicacion);
+        return mapper.toDTO(guardada);
+    }
+
+    @Override
+    @Transactional
+    public void desactivarUbicacion(Long id) {
+        UbicacionTecnica ubicacion = ubicacionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Ubicación no encontrada con ID: " + id));
+
+        ubicacion.setEstado(EstadoOperativo.FueraDeServicio);
+        ubicacionRepository.save(ubicacion);
+    }
 }

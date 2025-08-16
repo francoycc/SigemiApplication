@@ -16,4 +16,6 @@ public interface EquipoService {
     EquipoDTO crearEquipo(EquipoDTO dto);
     EquipoDTO buscarPorId(Long id);
     List<EquipoDTO> listarEquipos();
+    EquipoDTO actualizarEquipo(Long id, EquipoDTO dto);
+    void desactivarEquipo(Long id);
 }

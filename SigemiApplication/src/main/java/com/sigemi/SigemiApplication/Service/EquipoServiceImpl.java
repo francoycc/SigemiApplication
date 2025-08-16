@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EquipoServiceImpl implements EquipoService {
@@ -70,6 +71,7 @@ public class EquipoServiceImpl implements EquipoService {
 //        equipoRepository.save(equipo);
 //    }
     @Override
+    @Transactional
     public EquipoDTO crearEquipo(EquipoDTO dto){
         // validar equipo
         if(equipoRepository.existsByCodigoEquipo(dto.getCodigoEquipo())){
@@ -93,6 +95,7 @@ public class EquipoServiceImpl implements EquipoService {
     }
 
     @Override
+    @Transactional
     public EquipoDTO buscarPorId(Long id) {
         Equipo equipo = equipoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Equipo no encontrado con ID: " + id));
@@ -104,10 +107,10 @@ public class EquipoServiceImpl implements EquipoService {
         List<Equipo> equipos = equipoRepository.findAll();
 
         if (equipos.isEmpty()) {
-            log.info("No se encontraron equipos en la BD.");
+            System.out.println("No se encontraron equipos en la BD.");
         }
 
-        log.info("Se encontraron {} equipos en la base de datos.", equipos.size());
+        System.out.println("Se encontraron equipos en la base de datos: " + equipos.size());
 
         List<EquipoDTO> equiposDto = equipos.stream()
             .map(equipo -> mapper.toDTO(equipo))
@@ -115,5 +118,33 @@ public class EquipoServiceImpl implements EquipoService {
 
         return equiposDto;
     }
+
+    @Override
+    @Transactional
+    public EquipoDTO actualizarEquipo(Long id, EquipoDTO dto) {
+        Equipo equipo = equipoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No se encuentra el equipo para el ID: " + id));
+        
+        equipo.setCriticidad(Criticidad.valueOf(dto.getCriticidad()));
+        equipo.setEstadoOperativo(EstadoOperativo.valueOf(dto.getEstadoOperativo()));
+        equipo.setFrecuencia(dto.getFrecuencia());
+        equipo.setNombre(dto.getNombre());
+        equipo.setMarca(dto.getMarca());
+        equipo.setModelo(dto.getModelo());
+        equipo.setTipo(dto.getTipo());
+        
+        Equipo guardado = equipoRepository.save(equipo);
+        return mapper.toDTO(equipo);
+    }
+
+    @Override
+    @Transactional
+    public void desactivarEquipo(Long id) {
+        Equipo desactivado = equipoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No existe equipo para el ID: " + id));
+        desactivado.setEstadoOperativo(EstadoOperativo.FueraDeServicio);
+        equipoRepository.save(desactivado);
+    }
+    
     
 }

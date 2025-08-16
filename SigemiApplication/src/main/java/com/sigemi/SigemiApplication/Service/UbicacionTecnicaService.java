@@ -15,4 +15,6 @@ public interface UbicacionTecnicaService {
     UbicacionTecnicaDTO obtenerPorId(Long id);
     List<UbicacionTecnicaDTO> listarUbicaciones();
     List<UbicacionTecnicaDTO> listarUbicacionesPorPadre(Long idPadre);
+    UbicacionTecnicaDTO actualizarUbicacion(Long id, UbicacionTecnicaDTO dto);
+    void desactivarUbicacion(Long id);
 }

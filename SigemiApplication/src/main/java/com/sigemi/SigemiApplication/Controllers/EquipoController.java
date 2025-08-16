@@ -64,4 +64,17 @@ public class EquipoController {
     public ResponseEntity<List<EquipoDTO>> listarEquipos() {
         return ResponseEntity.ok(equipoService.listarEquipos());
     }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<EquipoDTO> actualizar(@PathVariable Long id, 
+            @RequestBody EquipoDTO dto) {
+        EquipoDTO actualizado = equipoService.actualizarEquipo(id, dto);
+        return ResponseEntity.ok(actualizado);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> desactivar(@PathVariable Long id) {
+        equipoService.desactivarEquipo(id);
+        return ResponseEntity.noContent().build();
+    }
 }
