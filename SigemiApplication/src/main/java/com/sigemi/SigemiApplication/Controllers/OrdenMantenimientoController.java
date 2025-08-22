@@ -24,31 +24,31 @@ public class OrdenMantenimientoController {
     public OrdenMantenimientoController(OrdenMantenimientoService ordenMantenimientoService){
         this.ordenMantenimientoService = ordenMantenimientoService;
     }
-    
-    @PostMapping
-    public OrdenMantenimiento crear(@RequestBody OrdenMantenimiento orden){
-        return ordenMantenimientoService.crearOrdenMantenimiento(orden);
-    }
-    
-    @GetMapping
-    public List<OrdenMantenimiento> listar(){
-        return ordenMantenimientoService.listarOrdenes();
-    }
-    
-    @GetMapping("/{id}")
-    public OrdenMantenimiento buscarPorId(@PathVariable Long id){
-        return ordenMantenimientoService.obtenerPorId(id);
-    }
-    
-    @PutMapping("/{id}")
-    public OrdenMantenimiento actualizar(@PathVariable Long id, @RequestBody OrdenMantenimiento orden){
-        return ordenMantenimientoService.actualizarOrdenMantenimiento(id, orden);
-    }
-    
-    @DeleteMapping("/{id}/finalizar")
-    public void finalizar(@PathVariable Long id){
-        ordenMantenimientoService.finalizarOrdenMantenimiento(id);
-    }
+//    
+//    @PostMapping
+//    public OrdenMantenimiento crear(@RequestBody OrdenMantenimiento orden){
+//        return ordenMantenimientoService.crearOrdenMantenimiento(orden);
+//    }
+//    
+//    @GetMapping
+//    public List<OrdenMantenimiento> listar(){
+//        return ordenMantenimientoService.listarOrdenes();
+//    }
+//    
+//    @GetMapping("/{id}")
+//    public OrdenMantenimiento buscarPorId(@PathVariable Long id){
+//        return ordenMantenimientoService.obtenerPorId(id);
+//    }
+//    
+//    @PutMapping("/{id}")
+//    public OrdenMantenimiento actualizar(@PathVariable Long id, @RequestBody OrdenMantenimiento orden){
+//        return ordenMantenimientoService.actualizarOrdenMantenimiento(id, orden);
+//    }
+//    
+//    @DeleteMapping("/{id}/finalizar")
+//    public void finalizar(@PathVariable Long id){
+//        ordenMantenimientoService.finalizarOrdenMantenimiento(id);
+//    }
     
     @ExceptionHandler(Exception.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Error message")
@@ -56,9 +56,20 @@ public class OrdenMantenimientoController {
     }
     
     @PostMapping
-    public ResponseEntity<OrdenDTO> crearOrden(@RequestBody OrdenDTO dto, Usuario principal) {
-        OrdenDTO nuevaOrden = ordenMantenimientoService.crearOrden(dto, principal.getNombreUsuario());
+    public ResponseEntity<OrdenDTO> crearOrden(@RequestBody OrdenDTO dto, 
+            @RequestParam String usuarioCreador) {
+        OrdenDTO nuevaOrden = ordenMantenimientoService.crearOrden(dto, usuarioCreador);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaOrden);
+    }
+    
+    @GetMapping
+    public ResponseEntity<List<OrdenDTO>> listarOrdenes() {
+        return ResponseEntity.ok(ordenMantenimientoService.listarOrdenes());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OrdenDTO> obtenerPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(ordenMantenimientoService.obtenerPorId(id));
     }
     
 }

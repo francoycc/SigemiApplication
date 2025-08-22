@@ -50,42 +50,42 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
         this.eventPublisher = eventPublisher;
     }
     
-    @Override
-    public OrdenMantenimiento crearOrdenMantenimiento(OrdenMantenimiento orden) {
-        orden.setEstado(EstadoOrden.Abierta);
-        orden.setFechaCreacion(java.time.LocalDate.now());
-        return ordenRepository.save(orden);
-    }
-
-    @Override
-    public List<OrdenMantenimiento> listarOrdenes() {
-        return ordenRepository.findAll();
-    }
-
-    @Override
-    public OrdenMantenimiento obtenerPorId(Long id) {
-        return ordenRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("Orden no encontrada"));
-    }
-
-    @Override
-    public OrdenMantenimiento actualizarOrdenMantenimiento(Long id, OrdenMantenimiento nueva) {
-        OrdenMantenimiento orden = obtenerPorId(id);
-        orden.setDescripcion(nueva.getDescripcion());
-        orden.setEstado(nueva.getEstado());
-        orden.setFechaInicio(nueva.getFechaInicio());
-        orden.setFechaFin(nueva.getFechaFin());
-        orden.setTipo(nueva.getTipo());
-        orden.setTecnicosAsignados(nueva.getTecnicosAsignados());
-        return ordenRepository.save(nueva);
-    }
-
-    @Override
-    public void finalizarOrdenMantenimiento(Long id) {
-        OrdenMantenimiento orden = obtenerPorId(id);
-        orden.setEstado(EstadoOrden.Finalizada);
-        ordenRepository.save(orden);
-    }
+//    @Override
+//    public OrdenMantenimiento crearOrdenMantenimiento(OrdenMantenimiento orden) {
+//        orden.setEstado(EstadoOrden.Abierta);
+//        orden.setFechaCreacion(java.time.LocalDate.now());
+//        return ordenRepository.save(orden);
+//    }
+//
+//    @Override
+//    public List<OrdenMantenimiento> listarOrdenes() {
+//        return ordenRepository.findAll();
+//    }
+//
+//    @Override
+//    public OrdenMantenimiento obtenerPorId(Long id) {
+//        return ordenRepository.findById(id)
+//                .orElseThrow(()-> new EntityNotFoundException("Orden no encontrada"));
+//    }
+//
+//    @Override
+//    public OrdenMantenimiento actualizarOrdenMantenimiento(Long id, OrdenMantenimiento nueva) {
+//        OrdenMantenimiento orden = obtenerPorId(id);
+//        orden.setDescripcion(nueva.getDescripcion());
+//        orden.setEstado(nueva.getEstado());
+//        orden.setFechaInicio(nueva.getFechaInicio());
+//        orden.setFechaFin(nueva.getFechaFin());
+//        orden.setTipo(nueva.getTipo());
+//        orden.setTecnicosAsignados(nueva.getTecnicosAsignados());
+//        return ordenRepository.save(nueva);
+//    }
+//
+//    @Override
+//    public void finalizarOrdenMantenimiento(Long id) {
+//        OrdenMantenimiento orden = obtenerPorId(id);
+//        orden.setEstado(EstadoOrden.Finalizada);
+//        ordenRepository.save(orden);
+//    }
 
     @Override
     @Transactional
@@ -112,7 +112,9 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
         orden.setFechaCreacion(LocalDate.now());
         orden.setFechaFin(dto.getFechaPrevistaEjecucion());
         orden.setPrioridad(dto.getPrioridad());
-        
+        orden.setDescripcion(dto.getDescripcion());
+        orden.setEstado(EstadoOrden.valueOf(dto.getEstadoOrden()));
+
 
         // crear tareas y asociar
         for (TareaDTO tareaDto : dto.getTareas()) {
@@ -128,6 +130,7 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
             tarea.setEstado(EstadoTarea.valueOf(tareaDto.getEstado()));
             tarea.setTecnico(tecnico);
             tarea.setFechaEjecucion(LocalDate.now());
+            
 
             // agrega y setea la relación 
             orden.addTarea(tarea);
@@ -150,6 +153,74 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
             .collect(Collectors.toList());
         resp.setTareas(tareasDto);
         return resp;
+    }
+
+    @Override
+    public OrdenDTO obtenerPorId(Long id) {
+        OrdenMantenimiento orden = ordenRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No se encontró la orden para el ID: " + id));
+        return mapper.toDto(orden);
+    }
+
+    @Override
+    public List<OrdenDTO> listarOrdenes() {
+        List<OrdenMantenimiento> ordenes = ordenRepository.findAll();
+        
+        if (ordenes.isEmpty()) {
+            System.out.println("No se encontraron ordenes en la BD.");
+        }
+
+        System.out.println("Se encontraron ordenes en la base de datos: " + ordenes.size());
+
+        List<OrdenDTO> ordenesDto = ordenes.stream()
+            .map(orden -> mapper.toDto(orden))
+            .collect(Collectors.toList());
+
+        return ordenesDto;
+    }
+
+    @Override
+    public List<OrdenDTO> listarPorEquipo(Long idEquipo) {
+        List<OrdenMantenimiento> ordenesPorEquipo = ordenRepository.findByEquipo_IdEquipo(idEquipo);
+        if (ordenesPorEquipo.isEmpty()) {
+            System.out.println("No se encontraron ordenes en la BD para el equipo buscado.");
+        }
+
+        System.out.println("Se encontraron " + ordenesPorEquipo.size() + " ordenes en la BD para el equipo: " + idEquipo);
+
+        List<OrdenDTO> ordenesDto = ordenesPorEquipo.stream()
+            .map(orden -> mapper.toDto(orden))
+            .collect(Collectors.toList());
+
+        return ordenesDto;
+    }
+
+    @Override
+    public OrdenDTO actualizarOrden(Long id, OrdenDTO dto) {
+        OrdenMantenimiento orden = ordenRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Orden no encontrada"));
+
+        // solo actualizamos ciertos campos
+        orden.setDescripcion(dto.getDescripcion());
+        orden.setEstado(EstadoOrden.valueOf(dto.getEstadoOrden()));
+        orden.setFechaFin(dto.getFechaPrevistaEjecucion());
+        orden.setPrioridad(dto.getPrioridad());
+        orden.setTipo(TipoMantenimiento.valueOf(dto.getTipo()));
+        
+        OrdenMantenimiento actualizada = ordenRepository.save(orden);
+        return mapper.toDto(actualizada);
+    }
+
+    @Override
+    public OrdenDTO finalizarOrden(Long id) {
+        OrdenMantenimiento orden = ordenRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Orden no encontrada con el ID: " + id));
+
+        orden.setEstado(EstadoOrden.Finalizada);
+        orden.setFechaFin(LocalDate.now());
+
+        OrdenMantenimiento finalizada = ordenRepository.save(orden);
+        return mapper.toDto(finalizada);
     }
     
 }

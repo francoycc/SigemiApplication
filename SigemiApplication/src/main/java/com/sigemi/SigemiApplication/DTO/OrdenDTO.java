@@ -26,6 +26,12 @@ public class OrdenDTO {
     
     @NotNull
     private String prioridad;
+    
+    private String estadoOrden;
+    
+    private String descripcion;
+
+    
 
     public Long getId() {
         return id;
@@ -89,6 +95,21 @@ public class OrdenDTO {
 
     public void setPrioridad(String prioridad) {
         this.prioridad = prioridad;
+    }
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getEstadoOrden() {
+        return estadoOrden;
+    }
+
+    public void setEstadoOrden(String estadoOrden) {
+        this.estadoOrden = estadoOrden;
     }
     
     
