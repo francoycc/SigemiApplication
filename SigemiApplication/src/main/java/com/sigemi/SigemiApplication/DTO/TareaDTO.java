@@ -2,16 +2,19 @@
 package com.sigemi.SigemiApplication.DTO;
 
 import jakarta.validation.constraints.*;
+import java.time.LocalDate;
 
 public class TareaDTO {
     private Long id;
     
-    @NotBlank
+    private String tipo; // mapeado desde el enum TipoMantenimiento
     private String descripcion;
+    private LocalDate fechaEjecucion;
     
     @NotBlank
     private String estado;
     
+    private Double tiempoInvertidoHoras;
     @NotNull
     private Long tecnicoId;
     
@@ -56,6 +59,30 @@ public class TareaDTO {
 
     public void setTecnicoNombre(String tecnicoNombre) {
         this.tecnicoNombre = tecnicoNombre;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public LocalDate getFechaEjecucion() {
+        return fechaEjecucion;
+    }
+
+    public void setFechaEjecucion(LocalDate fechaEjecucion) {
+        this.fechaEjecucion = fechaEjecucion;
+    }
+
+    public Double getTiempoInvertidoHoras() {
+        return tiempoInvertidoHoras;
+    }
+
+    public void setTiempoInvertidoHoras(Double tiempoInvertidoHoras) {
+        this.tiempoInvertidoHoras = tiempoInvertidoHoras;
     }
     
     
