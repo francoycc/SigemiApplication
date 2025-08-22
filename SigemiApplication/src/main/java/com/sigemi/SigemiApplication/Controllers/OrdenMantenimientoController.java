@@ -72,4 +72,14 @@ public class OrdenMantenimientoController {
         return ResponseEntity.ok(ordenMantenimientoService.obtenerPorId(id));
     }
     
+    @PutMapping("/{id}")
+    public ResponseEntity<OrdenDTO> actualizarOrden(@PathVariable Long id,
+                                                @RequestParam OrdenDTO dto){
+        return ResponseEntity.ok(ordenMantenimientoService.actualizarOrden(id, dto));
+    }
+    
+    @PutMapping("/{id}/finalizar")
+    public ResponseEntity<OrdenDTO> finalizarOrden(@PathVariable Long id){
+        return ResponseEntity.ok(ordenMantenimientoService.finalizarOrden(id));
+    }
 }
