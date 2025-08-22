@@ -8,6 +8,7 @@ import com.sigemi.SigemiApplication.Entidades.TareaMantenimiento;
 import com.sigemi.SigemiApplication.Entidades.Usuario;
 import com.sigemi.SigemiApplication.Enums.EstadoOrden;
 import com.sigemi.SigemiApplication.Enums.EstadoTarea;
+import com.sigemi.SigemiApplication.Enums.RolUsuario;
 import com.sigemi.SigemiApplication.Enums.TipoMantenimiento;
 import com.sigemi.SigemiApplication.Excepciones.*;
 import com.sigemi.SigemiApplication.Mapper.OrdenMapper;
@@ -92,19 +93,19 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
         
         // Validar supervisor
         Usuario supervisor = usuarioRepository.findById(dto.getSupervisorId())
-            .orElseThrow(() -> new EntityNotFoundException("Supervisor no encontrado"));
+            .orElseThrow(() -> new EntityNotFoundException("Supervisor no encontrado con ID: " + dto.getSupervisorId()));
 
-        if (!"SUPERVISOR".equalsIgnoreCase(supervisor.getRol().toString())) {
+        if (!RolUsuario.Supervisor.equals(supervisor.getRol().toString())) {
             throw new BusinessException("Usuario no tiene rol de supervisor");
         }
 
+        // validar equipo
         Equipo equipo = equipoRepository.findById(dto.getEquipoId())
-            .orElseThrow(() -> new EntityNotFoundException("Equipo no encontrado"));
+            .orElseThrow(() -> new EntityNotFoundException("Equipo no encontrado con ID: " + dto.getEquipoId()));
 
         // Crear oden
-        OrdenMantenimiento orden = ordenRepository.save(new OrdenMantenimiento());
+        OrdenMantenimiento orden = new OrdenMantenimiento();
         
-        orden.setCodigoOrden("WO-"+ String.format("%03d", equipo.getIdEquipo()) + String.format("%03d", orden.getIdOrden()));
         orden.setTipo(TipoMantenimiento.valueOf(dto.getTipo()));
         orden.setEquipo(equipo);
         orden.setSupervisor(supervisor);
@@ -116,9 +117,9 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
         // crear tareas y asociar
         for (TareaDTO tareaDto : dto.getTareas()) {
             Usuario tecnico = usuarioRepository.findById(tareaDto.getTecnicoId())
-                    .orElseThrow(()-> new EntityNotFoundException("Tecnico no encontrado"+ tareaDto.getTecnicoId()));
+                    .orElseThrow(()-> new EntityNotFoundException("Tecnico no encontrado con ID: "+ tareaDto.getTecnicoId()));
 
-            if (!"TECNICO".equalsIgnoreCase(tecnico.getRol().toString())) {
+            if (!RolUsuario.Operario.equals(tecnico.getRol().toString())) {
                 throw new BusinessException("Usuario no es técnico: " + tecnico.getIdUsuario());
             }
 
@@ -128,13 +129,17 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
             tarea.setTecnico(tecnico);
             tarea.setFechaEjecucion(LocalDate.now());
 
-            // agrega y setea la relación bidireccional
+            // agrega y setea la relación 
             orden.addTarea(tarea);
         }
 
-        // persistir (cascade guardara tareas)
+        // persistir (con tareas)
         OrdenMantenimiento ordenGuardada = ordenRepository.save(orden);
-
+        String codigo = "WO-" + String.format("%03d", equipo.getIdEquipo())
+                    + "-" + String.format("%05d", ordenGuardada.getIdOrden());
+        orden.setCodigoOrden(codigo);
+        
+        ordenGuardada = ordenRepository.save(ordenGuardada);
         // publicar evento para acciones asincronas 
         //eventPublisher.publishEvent(new OrdenCreadaEvent(this, ordenGuardada.getId()));
 

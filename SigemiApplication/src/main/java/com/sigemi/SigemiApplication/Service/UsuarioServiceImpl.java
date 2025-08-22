@@ -74,6 +74,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         if(usuarioRepository.existByNombreUsuario(usuariodto.getNombreUsuario())){
             throw new BusinessException("Ya existe un usuario para el nombre ingresado.");
         }
+        if(usuarioRepository.existByEmail(usuariodto.getEmail())){
+            throw new BusinessException("Ya existe un usuario para el email ingresado.");
+        }
         
         Usuario nuevo = mapper.toEntity(usuariodto);
         nuevo.setRol(RolUsuario.valueOf(usuariodto.getRol().toString()));
