@@ -17,7 +17,8 @@ public class TareaDTO {
     private Double tiempoInvertidoHoras;
     @NotNull
     private Long tecnicoId;
-    
+    // Relación con la orden
+    private Long ordenId;
     @NotBlank
     private String tecnicoNombre; 
 
@@ -84,6 +85,12 @@ public class TareaDTO {
     public void setTiempoInvertidoHoras(Double tiempoInvertidoHoras) {
         this.tiempoInvertidoHoras = tiempoInvertidoHoras;
     }
-    
-    
+
+    public Long getOrdenId() {
+        return ordenId;
+    }
+
+    public void setOrdenId(Long ordenId) {
+        this.ordenId = ordenId;
+    }
 }
