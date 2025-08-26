@@ -1,0 +1,96 @@
+package com.sigemi.SigemiApplication.Service;
+
+import com.sigemi.SigemiApplication.DTO.FallaReportadaDTO;
+import com.sigemi.SigemiApplication.Entidades.Equipo;
+import com.sigemi.SigemiApplication.Entidades.FallaReportada;
+import com.sigemi.SigemiApplication.Entidades.Usuario;
+import com.sigemi.SigemiApplication.Enums.Criticidad;
+import com.sigemi.SigemiApplication.Mapper.FallaMapper;
+import com.sigemi.SigemiApplication.Repository.EquipoRepository;
+import com.sigemi.SigemiApplication.Repository.FallaReportadaRepository;
+import com.sigemi.SigemiApplication.Repository.OrdenMantenimientoRepository;
+import com.sigemi.SigemiApplication.Repository.UsuarioRepository;
+import jakarta.persistence.EntityNotFoundException;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@RequiredArgsConstructor
+public class FallaServiceImpl implements FallaService {
+
+    @Autowired
+    private final FallaReportadaRepository fallaRepository;
+    @Autowired
+    private final EquipoRepository equipoRepository;
+    @Autowired
+    private final UsuarioRepository usuarioRepository;
+    @Autowired
+    private final OrdenMantenimientoRepository ordenRepository;
+    @Autowired
+    private final FallaMapper mapper;
+
+    public FallaServiceImpl(FallaReportadaRepository fallaRepository, 
+            EquipoRepository equipoRepository, 
+            UsuarioRepository usuarioRepository, 
+            OrdenMantenimientoRepository ordenRepository, 
+            FallaMapper mapper) {
+        this.fallaRepository = fallaRepository;
+        this.equipoRepository = equipoRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.ordenRepository = ordenRepository;
+        this.mapper = mapper;
+    }
+
+    
+    @Override
+    @Transactional
+    public FallaReportadaDTO reportarFalla(FallaReportadaDTO dto) {
+        Equipo equipo = equipoRepository.findById(dto.getEquipoId())
+            .orElseThrow(() -> new EntityNotFoundException("Equipo no encontrado"));
+
+        Usuario reportadoPor = usuarioRepository.findById(dto.getReportadoPorId())
+            .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+
+        // Guardar falla
+        FallaReportada falla = new FallaReportada();
+        falla.setEquipo(equipo);
+        falla.setReportadoPor(reportadoPor);
+        falla.setDescripcion(dto.getDescripcion());
+        falla.setFechaReporte(LocalDate.now());
+        falla.setCriticidad(Criticidad.valueOf(dto.getCriticidad()));
+        fallaRepository.save(falla);
+
+        // Crear Orden Correctiva
+//        OrdenMantenimiento orden = new OrdenMantenimiento();
+//        orden.setCodigoOrden("CORR-" + equipo.getIdEquipo() + "-" + falla.getIdFalla());
+//        orden.setEquipo(equipo);
+//        orden.setTipo(TipoMantenimiento.CORRECTIVO);
+//        orden.setSupervisor(null); 
+//        orden.setFechaCreacion(LocalDate.now());
+//        orden.setPrioridad(dto.getNivelSeveridad()); 
+//        ordenRepository.save(orden);
+
+        return mapper.toDTO(falla);
+    }
+
+    @Override
+    public List<FallaReportadaDTO> listarFallas() {
+        List<FallaReportada> fallas = fallaRepository.findAll();
+        return fallas.stream()
+            .map(falla -> mapper.toDTO(falla))
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public FallaReportadaDTO obtenerFallaPorId(Long id) {
+        FallaReportada falla = fallaRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Falla no encontrada"));
+        return mapper.toDTO(falla);
+    }
+    
+}

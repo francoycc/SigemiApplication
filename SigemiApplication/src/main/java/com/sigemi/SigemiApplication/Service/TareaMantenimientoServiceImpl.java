@@ -92,7 +92,7 @@ public class TareaMantenimientoServiceImpl implements TareaMantenimientoService 
                 .orElseThrow(() -> new EntityNotFoundException("No existe el tecnico para el ID ingresado:" + dto.getTecnicoId()));
         
         if (!RolUsuario.Operario.equals(tecnico.getRol().toString())) {
-                throw new BusinessException("Usuario no es técnico: " + tecnico.getIdUsuario());
+                throw new BusinessException("Usuario no tiene rol de tecnico: " + tecnico.getIdUsuario());
             }
         // validar orden
         OrdenMantenimiento orden = ordenRepository.findById(dto.getOrdenId())
