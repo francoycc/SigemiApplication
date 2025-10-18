@@ -9,4 +9,5 @@ public interface FallaService {
     FallaReportadaDTO reportarFalla(FallaReportadaDTO dto);
     List<FallaReportadaDTO> listarFallas();
     FallaReportadaDTO obtenerFallaPorId(Long id);
+    List<FallaReportadaDTO> listarPorEquipo(Long idEquipo);
 }

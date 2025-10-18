@@ -32,6 +32,7 @@ public class FallaReportadaController {
         this.fallaService = fallaService;
     }
 
+    // CU12 - Reportar Falla
     @PostMapping
     public ResponseEntity<FallaReportadaDTO> reportarFalla(@RequestBody FallaReportadaDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(fallaService.reportarFalla(dto));
@@ -49,7 +50,7 @@ public class FallaReportadaController {
     
     @ExceptionHandler(Exception.class)
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Error message")
-    public void handleError() {
+        public void handleError() {
     }
     
 }
