@@ -65,7 +65,7 @@ public class RepuestoServiceImpl implements RepuestoService{
     @Override
     public List<RepuestoDTO> listarRepuestosConStockMinimo() {
         //  metodo que defini en el Repository para encontrar stock minimo
-        List<Repuesto> repuestosAlertas = repuestoRepository.findByStockActualLessThan(BigDecimal.ZERO); // O usa el campo stockMinimo
+        List<Repuesto> repuestosAlertas = repuestoRepository.findRepuestosConStockBajo();
         
         return repuestosAlertas.stream()
                 .map(mapper::toDTO)

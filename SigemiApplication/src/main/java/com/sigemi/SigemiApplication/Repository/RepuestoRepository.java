@@ -7,10 +7,12 @@ package com.sigemi.SigemiApplication.Repository;
 import com.sigemi.SigemiApplication.Entidades.Repuesto;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 
 public interface RepuestoRepository extends JpaRepository<Repuesto, Long> {
     // buscar repuestos que estan por debajo del stock minimo
-    List<Repuesto> findByStockActualLessThan(Integer stockMinimo);
+    @Query("SELECT r FROM Repuesto r WHERE r.stockActual <= r.stockMinimo")
+    List<Repuesto> findRepuestosConStockBajo();
     
 }
