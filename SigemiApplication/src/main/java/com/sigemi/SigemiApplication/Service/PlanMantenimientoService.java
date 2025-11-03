@@ -3,11 +3,7 @@ package com.sigemi.SigemiApplication.Service;
 
 import com.sigemi.SigemiApplication.DTO.PlanMantenimientoDTO;
 import java.util.List;
-import org.springframework.stereotype.Service;
 
-
-
-@Service
 public interface PlanMantenimientoService {
     
     PlanMantenimientoDTO crearPlan(PlanMantenimientoDTO dto);
