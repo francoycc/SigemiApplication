@@ -23,26 +23,25 @@ public class ReporteServiceImpl implements ReporteService{
     @Autowired
     private OrdenMantenimientoRepository ordenRepository;
     
-    // Inyectamos los servicios de Tareas y Usos (que ya tienen mappers)
     @Autowired
-    private TareaMantenimientoService tareaService; //
+    private TareaMantenimientoService tareaService; 
     
     @Autowired
-    private UsoRepuestoService usoRepuestoService; // (De la implementación anterior)
+    private UsoRepuestoService usoRepuestoService; 
 
     @Autowired
-    private OrdenMapper ordenMapper; // Para mapear la parte base de la orden
+    private OrdenMapper ordenMapper; 
 
     @Override
     @Transactional(readOnly = true)
     public List<HistorialOrdenDTO> getHistorialPorEquipo(Long idEquipo) {
         
-        // 1. Buscar todas las órdenes para ese equipo
+        // 1. Buscar todas las ordenes para ese equipo
         List<OrdenMantenimiento> ordenes = ordenRepository.findByEquipo_IdEquipo(idEquipo);
         
         List<HistorialOrdenDTO> historialCompleto = new ArrayList<>();
 
-        // 2. Iterar cada orden y "enriquecerla"
+        // 2. Iterar cada orden
         for (OrdenMantenimiento orden : ordenes) {
             HistorialOrdenDTO historialDTO = new HistorialOrdenDTO();
 
