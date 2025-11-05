@@ -17,4 +17,7 @@ public interface TareaMantenimientoService {
     TareaDTO obtenerPorId(Long id);
     TareaDTO actualizarTarea(Long id, TareaDTO dto);
     void pausarTarea(Long id); 
+    
+    // las tareas asignadas a un tecnico
+    List<TareaDTO> listarPorTecnico(Long idTecnico);
 }

@@ -160,5 +160,13 @@ public class TareaMantenimientoServiceImpl implements TareaMantenimientoService 
         tarea.setEstado(EstadoTarea.Pausada);
         tareaMantenimientoRepository.save(tarea);
     }
+
+    @Override
+    public List<TareaDTO> listarPorTecnico(Long idTecnico) {
+        List<TareaMantenimiento> tareasPorTecnico = tareaMantenimientoRepository.findByTecnico_IdUsuario(idTecnico);
+        return tareasPorTecnico.stream()
+                .map(tarea -> tareaMapper.toDTO(tarea))
+                .collect(Collectors.toList());
+    }
     
 }

@@ -94,4 +94,10 @@ public class TareaMantenimientoController {
         tareaService.pausarTarea(id);
         return ResponseEntity.noContent().build();
     }
+    
+    // permite al técnico consultar su lista de tareas
+    @GetMapping("/tecnico/{idTecnico}")
+    public ResponseEntity<List<TareaDTO>> listarPorTecnico(@PathVariable Long idTecnico) {
+        return ResponseEntity.ok(tareaService.listarPorTecnico(idTecnico));
+    }
 }
