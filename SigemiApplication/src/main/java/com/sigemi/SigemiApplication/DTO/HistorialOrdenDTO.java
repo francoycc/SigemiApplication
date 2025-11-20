@@ -13,13 +13,13 @@ public class HistorialOrdenDTO {
     // datos de la Orden solo lectura
     private Long idOrden;
     private String codigoOrden;
-    private String tipo; // Preventivo, Correctivo, Predictivo
+    private String tipo; 
     private String descripcion;
     private String prioridad;
     private LocalDate fechaCreacion;
     private LocalDate fechaInicio;
     private LocalDate fechaFin;
-    private String estado; // Abierta, Finalizada, etc.
+    private String estado; 
     
     // datos del Equipo  
     private Long equipoId;
