@@ -30,9 +30,6 @@ public class Repuesto {
     @Column(nullable = false)
     private Integer stockMinimo;
 
-    // constructor
-    public Repuesto() {
-    }
 
     // getters and setters
     public Long getidRepuesto() {

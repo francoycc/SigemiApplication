@@ -28,9 +28,7 @@ public class FallaReportadaController {
     @Autowired
     private final FallaService fallaService;
 
-    public FallaReportadaController(FallaService fallaService) {
-        this.fallaService = fallaService;
-    }
+    
 
     // CU12 - Reportar Falla
     @PostMapping

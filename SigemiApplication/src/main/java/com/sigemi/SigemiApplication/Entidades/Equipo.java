@@ -53,8 +53,6 @@ public class Equipo {
     @OneToMany(mappedBy = "equipo", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlanMantenimiento> planesMantenimiento;
 
-    public Equipo() {
-    }
     
     public Long getIdEquipo() {
         return idEquipo;

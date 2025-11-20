@@ -21,9 +21,7 @@ public class OrdenMantenimientoController {
     @Autowired
     private final OrdenMantenimientoService ordenMantenimientoService;
     
-    public OrdenMantenimientoController(OrdenMantenimientoService ordenMantenimientoService){
-        this.ordenMantenimientoService = ordenMantenimientoService;
-    }
+    
 //    
 //    @PostMapping
 //    public OrdenMantenimiento crear(@RequestBody OrdenMantenimiento orden){

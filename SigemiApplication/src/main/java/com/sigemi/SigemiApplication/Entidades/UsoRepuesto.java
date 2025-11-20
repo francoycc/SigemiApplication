@@ -26,9 +26,6 @@ public class UsoRepuesto {
     @Column(nullable = false)
     private Integer cantidadUtilizada;
 
-    // constructor
-    public UsoRepuesto() {
-    }
     
     // getters and setters
     public Long getIdUsoRepuesto() {

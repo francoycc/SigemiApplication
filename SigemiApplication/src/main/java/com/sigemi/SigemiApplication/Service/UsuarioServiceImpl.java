@@ -71,10 +71,10 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     public UsuarioDTO crearUsuario(UsuarioDTO usuariodto) {
         // validar usuario
-        if(usuarioRepository.existByNombreUsuario(usuariodto.getNombreUsuario())){
+        if(usuarioRepository.existsByNombreUsuario(usuariodto.getNombreUsuario())){
             throw new BusinessException("Ya existe un usuario para el nombre ingresado.");
         }
-        if(usuarioRepository.existByEmail(usuariodto.getEmail())){
+        if(usuarioRepository.existsByEmail(usuariodto.getEmail())){
             throw new BusinessException("Ya existe un usuario para el email ingresado.");
         }
         

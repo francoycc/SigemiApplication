@@ -39,17 +39,7 @@ public class FallaServiceImpl implements FallaService {
     @Autowired
     private final FallaMapper mapper;
 
-    public FallaServiceImpl(FallaReportadaRepository fallaRepository, 
-            EquipoRepository equipoRepository, 
-            UsuarioRepository usuarioRepository, 
-            OrdenMantenimientoRepository ordenRepository, 
-            FallaMapper mapper) {
-        this.fallaRepository = fallaRepository;
-        this.equipoRepository = equipoRepository;
-        this.usuarioRepository = usuarioRepository;
-        this.ordenRepository = ordenRepository;
-        this.mapper = mapper;
-    }
+    
 
     
     @Override
