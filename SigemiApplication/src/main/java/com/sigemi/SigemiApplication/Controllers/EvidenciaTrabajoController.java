@@ -28,9 +28,5 @@ public class EvidenciaTrabajoController {
         return evidenciaService.listarPorTarea(idTarea);
     }
     
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Error message")
-    public void handleError() {
-    }
     
 }

@@ -34,11 +34,4 @@ public class UsoRepuestoController {
     public ResponseEntity<List<UsoRepuestoDTO>> listarPorOrden(@PathVariable Long idOrden) {
         return ResponseEntity.ok(usoRepuestoService.listarUsosPorOrden(idOrden));
     }
-    
-    
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Error message")
-    public void handleError() {
-    }
-    
 }

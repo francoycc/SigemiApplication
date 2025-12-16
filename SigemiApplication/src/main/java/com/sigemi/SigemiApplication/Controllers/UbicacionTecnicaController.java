@@ -51,11 +51,6 @@ public class UbicacionTecnicaController {
 //        return ubicacionService.listarUbicacionesPorPadre(idPadre);
 //    }
     
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Error message")
-    public void handleError() {
-    }
-    
      
     @PostMapping
     public ResponseEntity<UbicacionTecnicaDTO> crearUbicacionTecnica(@RequestBody UbicacionTecnicaDTO dto) {

@@ -43,11 +43,7 @@ public class EquipoController {
 //    public void deshabilitar(@PathVariable Long id){
 //        equipoService.deshabilitarEquipo(id);
 //    }
-    
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Error message")
-    public void handleError() {
-    }
+
     
     @PostMapping
     public ResponseEntity<EquipoDTO> crearEquipo(@RequestBody EquipoDTO dto) {

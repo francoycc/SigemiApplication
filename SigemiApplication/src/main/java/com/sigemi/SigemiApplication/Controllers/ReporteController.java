@@ -27,10 +27,4 @@ public class ReporteController {
         List<HistorialOrdenDTO> historial = reporteService.getHistorialPorEquipo(idEquipo);
         return ResponseEntity.ok(historial);
     }
-    
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR, reason = "Error message")
-    public void handleError() {
-        // Manejo de errores
-    }
 }
