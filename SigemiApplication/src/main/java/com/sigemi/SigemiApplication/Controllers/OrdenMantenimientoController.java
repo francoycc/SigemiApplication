@@ -5,6 +5,7 @@ import com.sigemi.SigemiApplication.DTO.OrdenDTO;
 import com.sigemi.SigemiApplication.Entidades.OrdenMantenimiento;
 import com.sigemi.SigemiApplication.Entidades.Usuario;
 import com.sigemi.SigemiApplication.Service.OrdenMantenimientoService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +51,7 @@ public class OrdenMantenimientoController {
 
     
     @PostMapping
-    public ResponseEntity<OrdenDTO> crearOrden(@RequestBody OrdenDTO dto, 
+    public ResponseEntity<OrdenDTO> crearOrden(@Valid @RequestBody OrdenDTO dto, 
             @RequestParam String usuarioCreador) {
         OrdenDTO nuevaOrden = ordenMantenimientoService.crearOrden(dto, usuarioCreador);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaOrden);
@@ -67,7 +68,7 @@ public class OrdenMantenimientoController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<OrdenDTO> actualizarOrden(@PathVariable Long id,
+    public ResponseEntity<OrdenDTO> actualizarOrden(@Valid @PathVariable Long id,
                                                 @RequestParam OrdenDTO dto){
         return ResponseEntity.ok(ordenMantenimientoService.actualizarOrden(id, dto));
     }

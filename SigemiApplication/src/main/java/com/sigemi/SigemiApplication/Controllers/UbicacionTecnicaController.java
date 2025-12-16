@@ -4,6 +4,7 @@ package com.sigemi.SigemiApplication.Controllers;
 import com.sigemi.SigemiApplication.DTO.UbicacionTecnicaDTO;
 import com.sigemi.SigemiApplication.Entidades.UbicacionTecnica;
 import com.sigemi.SigemiApplication.Service.UbicacionTecnicaService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +54,7 @@ public class UbicacionTecnicaController {
     
      
     @PostMapping
-    public ResponseEntity<UbicacionTecnicaDTO> crearUbicacionTecnica(@RequestBody UbicacionTecnicaDTO dto) {
+    public ResponseEntity<UbicacionTecnicaDTO> crearUbicacionTecnica(@Valid @RequestBody UbicacionTecnicaDTO dto) {
         UbicacionTecnicaDTO nuevoUbicacion = ubicacionService.crearUbicacion(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoUbicacion);
     }
@@ -69,7 +70,7 @@ public class UbicacionTecnicaController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<UbicacionTecnicaDTO> actualizar(@PathVariable Long id, 
+    public ResponseEntity<UbicacionTecnicaDTO> actualizar(@Valid @PathVariable Long id, 
             @RequestBody UbicacionTecnicaDTO dto) {
         UbicacionTecnicaDTO actualizada = ubicacionService.actualizarUbicacion(id, dto);
         return ResponseEntity.ok(actualizada);

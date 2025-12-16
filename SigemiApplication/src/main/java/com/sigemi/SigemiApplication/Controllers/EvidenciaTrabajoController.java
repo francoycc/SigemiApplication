@@ -3,6 +3,7 @@ package com.sigemi.SigemiApplication.Controllers;
 
 import com.sigemi.SigemiApplication.Entidades.EvidenciaTrabajo;
 import com.sigemi.SigemiApplication.Service.EvidenciaTrabajoService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class EvidenciaTrabajoController {
         this.evidenciaService = etService;
     }
     @PostMapping
-    public EvidenciaTrabajo crear(@RequestBody EvidenciaTrabajo evidencia) {
+    public EvidenciaTrabajo crear(@Valid @RequestBody EvidenciaTrabajo evidencia) {
         return evidenciaService.crearEvidencia(evidencia);
     }
 

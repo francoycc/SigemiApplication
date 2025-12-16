@@ -4,6 +4,7 @@ package com.sigemi.SigemiApplication.Controllers;
 import com.sigemi.SigemiApplication.DTO.TareaDTO;
 import com.sigemi.SigemiApplication.Entidades.TareaMantenimiento;
 import com.sigemi.SigemiApplication.Service.TareaMantenimientoService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -53,7 +54,7 @@ public class TareaMantenimientoController {
     
     
     @PostMapping
-    public ResponseEntity<TareaDTO> crearTarea(@RequestBody TareaDTO dto) {
+    public ResponseEntity<TareaDTO> crearTarea(@Valid @RequestBody TareaDTO dto) {
         TareaDTO nuevaTarea = tareaService.crearTarea(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaTarea);
     }
@@ -78,8 +79,7 @@ public class TareaMantenimientoController {
 
     
     @PutMapping("/{id}")
-    public ResponseEntity<TareaDTO> actualizarTarea(
-            @PathVariable Long id,
+    public ResponseEntity<TareaDTO> actualizarTarea(@Valid @PathVariable Long id,
             @RequestBody TareaDTO dto) {
         return ResponseEntity.ok(tareaService.actualizarTarea(id, dto));
     }

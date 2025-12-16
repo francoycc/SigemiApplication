@@ -3,6 +3,7 @@ package com.sigemi.SigemiApplication.Controllers;
 
 import com.sigemi.SigemiApplication.DTO.PlanMantenimientoDTO;
 import com.sigemi.SigemiApplication.Service.PlanMantenimientoService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +21,7 @@ public class PlanMantenimientoController {
     private PlanMantenimientoService planService;
     
     @PostMapping
-    public ResponseEntity<PlanMantenimientoDTO> crearPlan(@RequestBody PlanMantenimientoDTO dto) {
+    public ResponseEntity<PlanMantenimientoDTO> crearPlan(@Valid @RequestBody PlanMantenimientoDTO dto) {
         PlanMantenimientoDTO nuevoPlan = planService.crearPlan(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoPlan);
     }
@@ -41,7 +42,7 @@ public class PlanMantenimientoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PlanMantenimientoDTO> actualizarPlan(@PathVariable Long id, @RequestBody PlanMantenimientoDTO dto) {
+    public ResponseEntity<PlanMantenimientoDTO> actualizarPlan(@Valid @PathVariable Long id, @RequestBody PlanMantenimientoDTO dto) {
         PlanMantenimientoDTO actualizado = planService.actualizarPlan(id, dto);
         return ResponseEntity.ok(actualizado);
     }

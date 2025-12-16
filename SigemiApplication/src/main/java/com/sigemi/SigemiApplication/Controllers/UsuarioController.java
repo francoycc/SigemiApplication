@@ -3,6 +3,7 @@ package com.sigemi.SigemiApplication.Controllers;
 import com.sigemi.SigemiApplication.DTO.UsuarioDTO;
 import com.sigemi.SigemiApplication.Entidades.Usuario;
 import com.sigemi.SigemiApplication.Service.UsuarioService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +52,7 @@ public class UsuarioController {
     
     
     @PostMapping
-    public ResponseEntity<UsuarioDTO> crear(@RequestBody UsuarioDTO dto) {
+    public ResponseEntity<UsuarioDTO> crear(@Valid @RequestBody UsuarioDTO dto) {
         UsuarioDTO nuevoUsuario = usuarioService.crearUsuario(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoUsuario);
     }
@@ -67,7 +68,7 @@ public class UsuarioController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> actualizar(@PathVariable Long id, @RequestBody UsuarioDTO dto) {
+    public ResponseEntity<UsuarioDTO> actualizar(@Valid @PathVariable Long id, @RequestBody UsuarioDTO dto) {
         UsuarioDTO actualizado = usuarioService.actualizarUsuario(id, dto);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(actualizado);
     }

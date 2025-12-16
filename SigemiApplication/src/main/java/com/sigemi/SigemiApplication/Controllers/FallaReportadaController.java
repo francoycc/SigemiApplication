@@ -3,6 +3,7 @@ package com.sigemi.SigemiApplication.Controllers;
 
 import com.sigemi.SigemiApplication.DTO.FallaReportadaDTO;
 import com.sigemi.SigemiApplication.Service.FallaService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
@@ -32,7 +33,7 @@ public class FallaReportadaController {
 
     // CU12 - Reportar Falla
     @PostMapping
-    public ResponseEntity<FallaReportadaDTO> reportarFalla(@RequestBody FallaReportadaDTO dto) {
+    public ResponseEntity<FallaReportadaDTO> reportarFalla(@Valid @RequestBody FallaReportadaDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(fallaService.reportarFalla(dto));
     }
 

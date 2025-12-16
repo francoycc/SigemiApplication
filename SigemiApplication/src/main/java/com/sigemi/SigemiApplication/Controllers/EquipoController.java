@@ -3,6 +3,7 @@ package com.sigemi.SigemiApplication.Controllers;
 import com.sigemi.SigemiApplication.DTO.EquipoDTO;
 import com.sigemi.SigemiApplication.Entidades.Equipo;
 import com.sigemi.SigemiApplication.Service.EquipoService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ public class EquipoController {
 
     
     @PostMapping
-    public ResponseEntity<EquipoDTO> crearEquipo(@RequestBody EquipoDTO dto) {
+    public ResponseEntity<EquipoDTO> crearEquipo(@Valid @RequestBody EquipoDTO dto) {
         EquipoDTO nuevoEquipo = equipoService.crearEquipo(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoEquipo);
     }
@@ -62,7 +63,7 @@ public class EquipoController {
     }
     
     @PutMapping("/{id}")
-    public ResponseEntity<EquipoDTO> actualizar(@PathVariable Long id, 
+    public ResponseEntity<EquipoDTO> actualizar(@Valid @PathVariable Long id, 
             @RequestBody EquipoDTO dto) {
         EquipoDTO actualizado = equipoService.actualizarEquipo(id, dto);
         return ResponseEntity.ok(actualizado);

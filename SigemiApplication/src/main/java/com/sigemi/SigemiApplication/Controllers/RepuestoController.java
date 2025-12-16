@@ -6,6 +6,7 @@ package com.sigemi.SigemiApplication.Controllers;
 
 import com.sigemi.SigemiApplication.DTO.RepuestoDTO;
 import com.sigemi.SigemiApplication.Service.RepuestoService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
@@ -46,7 +47,7 @@ public class RepuestoController {
     }
     
     @PostMapping
-    public ResponseEntity<RepuestoDTO> crear(@RequestBody RepuestoDTO dto) {
+    public ResponseEntity<RepuestoDTO> crear(@Valid @RequestBody RepuestoDTO dto) {
         RepuestoDTO nuevo = repuestoService.crearRepuesto(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
     }

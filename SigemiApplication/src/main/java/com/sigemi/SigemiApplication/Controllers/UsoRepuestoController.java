@@ -6,6 +6,7 @@ package com.sigemi.SigemiApplication.Controllers;
 
 import com.sigemi.SigemiApplication.DTO.UsoRepuestoDTO;
 import com.sigemi.SigemiApplication.Service.UsoRepuestoService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,7 +25,7 @@ public class UsoRepuestoController {
     
     // CU15: registrar uso de respuestos en orden
     @PostMapping
-    public ResponseEntity<UsoRepuestoDTO> registrarUso(@RequestBody UsoRepuestoDTO dto) {
+    public ResponseEntity<UsoRepuestoDTO> registrarUso(@Valid @RequestBody UsoRepuestoDTO dto) {
         UsoRepuestoDTO nuevoUso = usoRepuestoService.registrarUso(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoUso);
     }

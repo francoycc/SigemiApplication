@@ -16,9 +16,9 @@ public class EquipoDTO {
     private String marca;
     
     private String modelo;
-    
+    @NotNull
     private String numeroSerie;
-    
+    @NotNull
     private LocalDate fechaIncorporacion;
     
     private String estadoOperativo; // Enum como String
