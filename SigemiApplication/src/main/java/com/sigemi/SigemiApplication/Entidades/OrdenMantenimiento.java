@@ -53,23 +53,11 @@ public class OrdenMantenimiento {
     @JoinColumn(name = "id_supervisor")
     private Usuario supervisor;
 
-    // Tecnicos asignados a la orden
-    @ManyToMany
-    @JoinTable(
-        name = "ordenTecnico",
-        joinColumns = @JoinColumn(name = "id_orden"),
-        inverseJoinColumns = @JoinColumn(name = "id_usuario")
-    )
-    private List<Usuario> tecnicosAsignados;
-
     // Tareas de mantenimiento registradas
     @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TareaMantenimiento> tareas;
 
-    // Repuestos usados
-    //@OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, orphanRemoval = true)
-    //private List<UsoRepuesto> repuestosUtilizados;
-
+    
     // Metodo para saber si puede finalizarse
     /*
     public boolean puedeFinalizarse() {
@@ -164,14 +152,6 @@ public class OrdenMantenimiento {
         this.supervisor = supervisor;
     }
 
-    public List<Usuario> getTecnicosAsignados() {
-        return tecnicosAsignados;
-    }
-
-    public void setTecnicosAsignados(List<Usuario> tecnicosAsignados) {
-        this.tecnicosAsignados = tecnicosAsignados;
-    }
-
     public List<TareaMantenimiento> getTareas() {
         return tareas;
     }
@@ -181,7 +161,8 @@ public class OrdenMantenimiento {
     }
 
     public void addTarea(TareaMantenimiento tarea) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        tareas.add(tarea);
+        tarea.setOrden(this);
     }
     
 }
