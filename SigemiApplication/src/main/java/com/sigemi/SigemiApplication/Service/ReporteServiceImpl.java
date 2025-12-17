@@ -8,10 +8,12 @@ import com.sigemi.SigemiApplication.DTO.HistorialOrdenDTO;
 import com.sigemi.SigemiApplication.DTO.TareaDTO;
 import com.sigemi.SigemiApplication.DTO.UsoRepuestoDTO;
 import com.sigemi.SigemiApplication.Entidades.OrdenMantenimiento;
-import com.sigemi.SigemiApplication.Mapper.OrdenMapper;
+import com.sigemi.SigemiApplication.Mapper.TareaMapper;
+import com.sigemi.SigemiApplication.Mapper.UsoRepuestoMapper;
 import com.sigemi.SigemiApplication.Repository.OrdenMantenimientoRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,28 +26,25 @@ public class ReporteServiceImpl implements ReporteService{
     private OrdenMantenimientoRepository ordenRepository;
     
     @Autowired
-    private TareaMantenimientoService tareaService; 
+    private TareaMapper tareaMapper; 
     
     @Autowired
-    private UsoRepuestoService usoRepuestoService; 
-
-    @Autowired
-    private OrdenMapper ordenMapper; 
+    private UsoRepuestoMapper usoRepuestoMapper; 
 
     @Override
     @Transactional(readOnly = true)
     public List<HistorialOrdenDTO> getHistorialPorEquipo(Long idEquipo) {
         
-        // 1. Buscar todas las ordenes para ese equipo
+        // (Orden + Tareas + Repuestos)
         List<OrdenMantenimiento> ordenes = ordenRepository.findByEquipo_IdEquipo(idEquipo);
         
         List<HistorialOrdenDTO> historialCompleto = new ArrayList<>();
 
-        // 2. Iterar cada orden
+        // Mapeo en Memoria
         for (OrdenMantenimiento orden : ordenes) {
             HistorialOrdenDTO historialDTO = new HistorialOrdenDTO();
 
-            //  Mapear datos basicos de la orden
+            // Datos básicos
             historialDTO.setIdOrden(orden.getIdOrden());
             historialDTO.setCodigoOrden(orden.getCodigoOrden());
             historialDTO.setTipo(orden.getTipo().name());
@@ -56,25 +55,31 @@ public class ReporteServiceImpl implements ReporteService{
             historialDTO.setFechaFin(orden.getFechaFin());
             historialDTO.setEstado(orden.getEstado().name());
             
-            // Datos del equipo
             if (orden.getEquipo() != null) {
                 historialDTO.setEquipoId(orden.getEquipo().getIdEquipo());
                 historialDTO.setEquipoNombre(orden.getEquipo().getNombre());
             }
 
-            // Buscar Tareas asociadas (usando el servicio que ya las mapea a DTO)
-            List<TareaDTO> tareasDTO = tareaService.listarPorOrden(orden.getIdOrden());
-            historialDTO.setTareas(tareasDTO);
+            if (orden.getTareas() != null) {
+                historialDTO.setTareas(
+                    orden.getTareas().stream()
+                        .map(tareaMapper::toDTO)
+                        .collect(Collectors.toList())
+                );
+            }
 
-            // Buscar Repuestos Utilizados (usando el servicio que ya las mapea a DTO)
-            List<UsoRepuestoDTO> repuestosDTO = usoRepuestoService.listarUsosPorOrden(orden.getIdOrden());
-            historialDTO.setRepuestosUtilizados(repuestosDTO);
+            if (orden.getRepuestosUtilizados() != null) {
+                historialDTO.setRepuestosUtilizados(
+                    orden.getRepuestosUtilizados().stream()
+                        .map(usoRepuestoMapper::toDTO)
+                        .collect(Collectors.toList())
+                );
+            }
             
-            // 3. Añadir el DTO completo a la lista
             historialCompleto.add(historialDTO);
         }
 
-        // Ordenar por fecha de creación descendente (la más nueva primero)
+        // Ordenar en memoria
         historialCompleto.sort((o1, o2) -> o2.getFechaCreacion().compareTo(o1.getFechaCreacion()));
 
         return historialCompleto;

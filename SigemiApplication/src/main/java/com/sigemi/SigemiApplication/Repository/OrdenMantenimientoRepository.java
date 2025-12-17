@@ -17,4 +17,10 @@ public interface OrdenMantenimientoRepository extends JpaRepository<OrdenManteni
     
     @EntityGraph(attributePaths = {"equipo", "supervisor", "tareas", "repuestosUtilizados"})
     List<OrdenMantenimiento> findByEquipo_IdEquipo(Long idEquipo);
+    
+    @Query("SELECT o FROM OrdenMantenimiento o " +
+       "LEFT JOIN FETCH o.tareas " +
+       "LEFT JOIN FETCH o.repuestosUtilizados " +
+       "WHERE o.equipo.idEquipo = :idEquipo")
+    List<OrdenMantenimiento> buscarOrdenesCompletasPorEquipo(Long idEquipo);
 }
