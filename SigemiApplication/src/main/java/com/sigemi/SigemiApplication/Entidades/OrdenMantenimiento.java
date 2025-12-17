@@ -7,7 +7,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "OrdenMantenimiento")
@@ -53,10 +55,17 @@ public class OrdenMantenimiento {
     @JoinColumn(name = "id_supervisor")
     private Usuario supervisor;
 
-    // Tareas de mantenimiento registradas
+    // Set para tareas
     @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TareaMantenimiento> tareas;
+    @ToString.Exclude // Importante para evitar bucles infinitos
+    @EqualsAndHashCode.Exclude
+    private Set<TareaMantenimiento> tareas = new HashSet<>();
 
+    // Set para Repuestos
+    @OneToMany(mappedBy = "orden", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<UsoRepuesto> repuestosUtilizados = new HashSet<>();
     
     // Metodo para saber si puede finalizarse
     /*
@@ -152,14 +161,21 @@ public class OrdenMantenimiento {
         this.supervisor = supervisor;
     }
 
-    public List<TareaMantenimiento> getTareas() {
+    public Set<TareaMantenimiento> getTareas() {
         return tareas;
     }
 
-    public void setTareas(List<TareaMantenimiento> tareas) {
+    public void setTareas(Set<TareaMantenimiento> tareas) {
         this.tareas = tareas;
     }
+    
+    public Set<UsoRepuesto> getRepuestosUtilizados() {
+        return repuestosUtilizados;
+    }
 
+    public void setRepuestosUtilizados(Set<UsoRepuesto> repuestosUtilizados) {
+        this.repuestosUtilizados = repuestosUtilizados;
+    }
     public void addTarea(TareaMantenimiento tarea) {
         tareas.add(tarea);
         tarea.setOrden(this);
