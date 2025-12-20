@@ -24,6 +24,8 @@ public class OrdenDTO {
     @NotEmpty
     private List<TareaDTO> tareas;
     
+    private List<String> nombresTecnicos;
+    
     @NotNull
     private String prioridad;
     
@@ -79,6 +81,14 @@ public class OrdenDTO {
 
     public void setFechaPrevistaEjecucion(LocalDate fechaPrevistaEjecucion) {
         this.fechaPrevistaEjecucion = fechaPrevistaEjecucion;
+    }
+    
+    public List<String> getNombresTecnicos() {
+        return nombresTecnicos;
+    }
+
+    public void setNombresTecnicos(List<String> nombresTecnicos) {
+        this.nombresTecnicos = nombresTecnicos;
     }
 
     public List<TareaDTO> getTareas() {
