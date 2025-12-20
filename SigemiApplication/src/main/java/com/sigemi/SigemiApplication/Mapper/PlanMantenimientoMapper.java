@@ -8,7 +8,10 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface PlanMantenimientoMapper {
     
+    @Mapping(source = "equipo.idEquipo", target = "equipoId")
+    @Mapping(source = "equipo.nombre", target = "equipoNombre")
     PlanMantenimientoDTO toDTO(PlanMantenimiento entidad);
     
+    @Mapping(target = "equipo", ignore = true)
     PlanMantenimiento toEntity(PlanMantenimientoDTO dto);
 }

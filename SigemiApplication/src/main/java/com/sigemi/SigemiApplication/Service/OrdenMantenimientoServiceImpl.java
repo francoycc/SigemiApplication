@@ -12,6 +12,7 @@ import com.sigemi.SigemiApplication.Enums.RolUsuario;
 import com.sigemi.SigemiApplication.Enums.TipoMantenimiento;
 import com.sigemi.SigemiApplication.Excepciones.*;
 import com.sigemi.SigemiApplication.Mapper.OrdenMapper;
+import com.sigemi.SigemiApplication.Mapper.TareaMapper;
 import com.sigemi.SigemiApplication.Repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
@@ -36,6 +37,8 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
     private UsuarioRepository usuarioRepository;
     @Autowired
     private OrdenMapper mapper;
+    @Autowired
+    private TareaMapper mapperTarea;
 
     @Override
     @Transactional
@@ -98,7 +101,7 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
         // mapear respuesta
         OrdenDTO resp = mapper.toDto(ordenGuardada);
         List<TareaDTO> tareasDto = ordenGuardada.getTareas().stream()
-            .map(mapper::tareaToDto)
+            .map(mapperTarea::toDTO)
             .collect(Collectors.toList());
         resp.setTareas(tareasDto);
         return resp;
