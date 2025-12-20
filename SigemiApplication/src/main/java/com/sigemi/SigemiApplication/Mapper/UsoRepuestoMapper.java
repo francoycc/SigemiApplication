@@ -3,7 +3,7 @@ package com.sigemi.SigemiApplication.Mapper;
 
 import com.sigemi.SigemiApplication.DTO.UsoRepuestoDTO;
 import com.sigemi.SigemiApplication.Entidades.UsoRepuesto;
-import org.mapstruct.Mapper;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface UsoRepuestoMapper {

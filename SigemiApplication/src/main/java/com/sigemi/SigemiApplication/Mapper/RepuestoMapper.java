@@ -6,7 +6,7 @@ package com.sigemi.SigemiApplication.Mapper;
 
 import com.sigemi.SigemiApplication.DTO.RepuestoDTO;
 import com.sigemi.SigemiApplication.Entidades.Repuesto;
-import org.mapstruct.Mapper;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface RepuestoMapper {

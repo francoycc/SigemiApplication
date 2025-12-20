@@ -3,6 +3,8 @@ package com.sigemi.SigemiApplication.Service;
 import com.sigemi.SigemiApplication.DTO.OrdenDTO;
 import com.sigemi.SigemiApplication.Entidades.OrdenMantenimiento;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 
 public interface OrdenMantenimientoService {
@@ -17,7 +19,7 @@ public interface OrdenMantenimientoService {
 
     List<OrdenDTO> listarOrdenes();
     
-    List<OrdenDTO> listarPorEquipo(Long idEquipo);
+    Page<OrdenDTO> listarPorEquipo(Long idEquipo, Pageable pageable);
 
     OrdenDTO actualizarOrden(Long id, OrdenDTO dto);
 

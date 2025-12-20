@@ -11,6 +11,8 @@ public class OrdenDTO {
 
     @NotNull
     private Long equipoId;
+    
+    private String equipoNombre;
 
     @NotNull
     private Long supervisorId;
@@ -59,6 +61,14 @@ public class OrdenDTO {
         this.equipoId = equipoId;
     }
 
+    public String getEquipoNombre() {
+        return equipoNombre;
+    }
+
+    public void setEquipoNombre(String equipoNombre) {
+        this.equipoNombre = equipoNombre;
+    }
+    
     public Long getSupervisorId() {
         return supervisorId;
     }

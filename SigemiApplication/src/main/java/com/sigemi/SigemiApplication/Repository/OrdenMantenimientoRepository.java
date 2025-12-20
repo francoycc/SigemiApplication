@@ -3,6 +3,8 @@ package com.sigemi.SigemiApplication.Repository;
 
 import com.sigemi.SigemiApplication.Entidades.OrdenMantenimiento;
 import com.sigemi.SigemiApplication.Enums.EstadoOrden;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -16,7 +18,7 @@ public interface OrdenMantenimientoRepository extends JpaRepository<OrdenManteni
     // List<OrdenMantenimiento> findByEquipo_IdEquipo(Long idEquipo);
     
     @EntityGraph(attributePaths = {"equipo", "supervisor", "tareas", "repuestosUtilizados"})
-    List<OrdenMantenimiento> findByEquipo_IdEquipo(Long idEquipo);
+    Page<OrdenMantenimiento> findByEquipo_IdEquipo(Long idEquipo, Pageable pageable);
     
     @Query("SELECT o FROM OrdenMantenimiento o " +
        "LEFT JOIN FETCH o.tareas " +

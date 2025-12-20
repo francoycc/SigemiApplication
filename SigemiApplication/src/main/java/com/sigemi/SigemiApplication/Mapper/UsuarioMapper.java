@@ -2,7 +2,7 @@ package com.sigemi.SigemiApplication.Mapper;
 
 import com.sigemi.SigemiApplication.DTO.UsuarioDTO;
 import com.sigemi.SigemiApplication.Entidades.Usuario;
-import org.mapstruct.Mapper;
+import org.mapstruct.*;
 
 
 @Mapper(componentModel = "spring")

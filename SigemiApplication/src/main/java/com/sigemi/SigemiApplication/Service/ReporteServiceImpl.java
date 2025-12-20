@@ -17,7 +17,8 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class ReporteServiceImpl implements ReporteService{
@@ -33,56 +34,43 @@ public class ReporteServiceImpl implements ReporteService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<HistorialOrdenDTO> getHistorialPorEquipo(Long idEquipo) {
+    public Page<HistorialOrdenDTO> getHistorialPorEquipo(Long idEquipo, Pageable pageable) {
         
-        // (Orden + Tareas + Repuestos)
-        List<OrdenMantenimiento> ordenes = ordenRepository.findByEquipo_IdEquipo(idEquipo);
+        Page<OrdenMantenimiento> paginaOrdenes = ordenRepository.findByEquipo_IdEquipo(idEquipo, pageable);
         
-        List<HistorialOrdenDTO> historialCompleto = new ArrayList<>();
-
-        // Mapeo en Memoria
-        for (OrdenMantenimiento orden : ordenes) {
-            HistorialOrdenDTO historialDTO = new HistorialOrdenDTO();
-
-            // Datos básicos
-            historialDTO.setIdOrden(orden.getIdOrden());
-            historialDTO.setCodigoOrden(orden.getCodigoOrden());
-            historialDTO.setTipo(orden.getTipo().name());
-            historialDTO.setDescripcion(orden.getDescripcion());
-            historialDTO.setPrioridad(orden.getPrioridad());
-            historialDTO.setFechaCreacion(orden.getFechaCreacion());
-            historialDTO.setFechaInicio(orden.getFechaInicio());
-            historialDTO.setFechaFin(orden.getFechaFin());
-            historialDTO.setEstado(orden.getEstado().name());
+        return paginaOrdenes.map(orden -> {
+            HistorialOrdenDTO dto = new HistorialOrdenDTO();
             
+            // Mapeo manual 
+            dto.setIdOrden(orden.getIdOrden());
+            dto.setCodigoOrden(orden.getCodigoOrden());
+            dto.setTipo(orden.getTipo().name());
+            dto.setDescripcion(orden.getDescripcion());
+            dto.setPrioridad(orden.getPrioridad());
+            dto.setFechaCreacion(orden.getFechaCreacion());
+            dto.setFechaInicio(orden.getFechaInicio());
+            dto.setFechaFin(orden.getFechaFin());
+            dto.setEstado(orden.getEstado().name());
+
             if (orden.getEquipo() != null) {
-                historialDTO.setEquipoId(orden.getEquipo().getIdEquipo());
-                historialDTO.setEquipoNombre(orden.getEquipo().getNombre());
+                dto.setEquipoId(orden.getEquipo().getIdEquipo());
+                dto.setEquipoNombre(orden.getEquipo().getNombre());
             }
 
+            // Usamos los mappers para las colecciones anidadas
             if (orden.getTareas() != null) {
-                historialDTO.setTareas(
-                    orden.getTareas().stream()
+                dto.setTareas(orden.getTareas().stream()
                         .map(tareaMapper::toDTO)
-                        .collect(Collectors.toList())
-                );
+                        .collect(Collectors.toList()));
             }
 
             if (orden.getRepuestosUtilizados() != null) {
-                historialDTO.setRepuestosUtilizados(
-                    orden.getRepuestosUtilizados().stream()
+                dto.setRepuestosUtilizados(orden.getRepuestosUtilizados().stream()
                         .map(usoRepuestoMapper::toDTO)
-                        .collect(Collectors.toList())
-                );
+                        .collect(Collectors.toList()));
             }
-            
-            historialCompleto.add(historialDTO);
-        }
 
-        // Ordenar en memoria
-        historialCompleto.sort((o1, o2) -> o2.getFechaCreacion().compareTo(o1.getFechaCreacion()));
-
-        return historialCompleto;
+            return dto;
+        });
     }
-    
 }

@@ -9,10 +9,7 @@ import com.sigemi.SigemiApplication.Entidades.Usuario;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.mapstruct.AfterMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.springframework.web.bind.annotation.Mapping;
+import org.mapstruct.*;
 
 
 @Mapper(componentModel = "spring")
@@ -20,16 +17,14 @@ public interface OrdenMapper {
     
     @Mapping(source = "equipo.idEquipo", target = "equipoId")
     @Mapping(source = "equipo.nombre", target = "equipoNombre")
-    @Mapping(target = "nombresTecnicos", ignore = true) 
-    OrdenDTO toDTO(OrdenMantenimiento entidad);
+    @Mapping(target = "nombresTecnicos", ignore = true)
+    OrdenDTO toDto(OrdenMantenimiento entidad);
 
     @Mapping(source = "equipoId", target = "equipo.idEquipo")
     OrdenMantenimiento toEntity(OrdenDTO dto);
-
-    /**
-     * Logica personalizada para extraer los tecnicos de las tareas
-     * y ponerlos en el DTO de la Orden.
-     */
+    
+    TareaDTO tareaToDto(TareaMantenimiento tarea);
+    
     @AfterMapping
     default void calcularTecnicos(OrdenMantenimiento entidad, @MappingTarget OrdenDTO dto) {
         if (entidad.getTareas() == null || entidad.getTareas().isEmpty()) {
@@ -37,10 +32,10 @@ public interface OrdenMapper {
         }
 
         List<String> tecnicos = entidad.getTareas().stream()
-                .map(TareaMantenimiento::getTecnico) // Obtener Usuario
-                .filter(Objects::nonNull)            // Evitar NullPointerException
-                .map(Usuario::getNombreUsuario)      // O getNombre() + " " + getApellido()
-                .distinct()                          // Que no aparezca repetido
+                .map(TareaMantenimiento::getTecnico)
+                .filter(Objects::nonNull)
+                .map(usuario -> usuario.getNombre() + " " + usuario.getApellido()) // O getNombreUsuario()
+                .distinct()
                 .collect(Collectors.toList());
 
         dto.setNombresTecnicos(tecnicos);

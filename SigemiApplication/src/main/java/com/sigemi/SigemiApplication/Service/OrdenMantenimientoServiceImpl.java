@@ -16,76 +16,26 @@ import com.sigemi.SigemiApplication.Repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 @Service
 public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService {
 
-    private final OrdenMantenimientoRepository ordenRepository;
-    private final EquipoRepository equipoRepository;
-    private final TareaMantenimientoRepository tareaRepository;
-    //private final UbicacionTecnicaRepository ubicacionRepository;
-    private final UsuarioRepository usuarioRepository;
-    private final OrdenMapper mapper;
-    private final ApplicationEventPublisher eventPublisher;
-    
     @Autowired
-    public OrdenMantenimientoServiceImpl(OrdenMantenimientoRepository ordenRepo,
-                            TareaMantenimientoRepository tareaRepo,
-                            UsuarioRepository usuarioRepo,
-                            EquipoRepository equipoRepo,
-                            OrdenMapper mapper,
-                            ApplicationEventPublisher eventPublisher) {
-        this.ordenRepository = ordenRepo;
-        this.tareaRepository = tareaRepo;
-        this.usuarioRepository = usuarioRepo;
-        this.equipoRepository = equipoRepo;
-        this.mapper = mapper;
-        this.eventPublisher = eventPublisher;
-    }
-    
-//    @Override
-//    public OrdenMantenimiento crearOrdenMantenimiento(OrdenMantenimiento orden) {
-//        orden.setEstado(EstadoOrden.Abierta);
-//        orden.setFechaCreacion(java.time.LocalDate.now());
-//        return ordenRepository.save(orden);
-//    }
-//
-//    @Override
-//    public List<OrdenMantenimiento> listarOrdenes() {
-//        return ordenRepository.findAll();
-//    }
-//
-//    @Override
-//    public OrdenMantenimiento obtenerPorId(Long id) {
-//        return ordenRepository.findById(id)
-//                .orElseThrow(()-> new EntityNotFoundException("Orden no encontrada"));
-//    }
-//
-//    @Override
-//    public OrdenMantenimiento actualizarOrdenMantenimiento(Long id, OrdenMantenimiento nueva) {
-//        OrdenMantenimiento orden = obtenerPorId(id);
-//        orden.setDescripcion(nueva.getDescripcion());
-//        orden.setEstado(nueva.getEstado());
-//        orden.setFechaInicio(nueva.getFechaInicio());
-//        orden.setFechaFin(nueva.getFechaFin());
-//        orden.setTipo(nueva.getTipo());
-//        orden.setTecnicosAsignados(nueva.getTecnicosAsignados());
-//        return ordenRepository.save(nueva);
-//    }
-//
-//    @Override
-//    public void finalizarOrdenMantenimiento(Long id) {
-//        OrdenMantenimiento orden = obtenerPorId(id);
-//        orden.setEstado(EstadoOrden.Finalizada);
-//        ordenRepository.save(orden);
-//    }
+    private OrdenMantenimientoRepository ordenRepository;
+    @Autowired
+    private EquipoRepository equipoRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    @Autowired
+    private OrdenMapper mapper;
 
     @Override
     @Transactional
@@ -130,8 +80,7 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
             tarea.setEstado(EstadoTarea.valueOf(tareaDto.getEstado()));
             tarea.setTecnico(tecnico);
             tarea.setFechaEjecucion(LocalDate.now());
-            
-
+            tarea.setTipo(orden.getTipo()); 
             // agrega y setea la relación 
             orden.addTarea(tarea);
         }
@@ -156,6 +105,7 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
     }
 
     @Override
+    @Transactional(readOnly = true)
     public OrdenDTO obtenerPorId(Long id) {
         OrdenMantenimiento orden = ordenRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No se encontró la orden para el ID: " + id));
@@ -163,36 +113,26 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<OrdenDTO> listarOrdenes() {
-        List<OrdenMantenimiento> ordenes = ordenRepository.findAll();
-        
-        if (ordenes.isEmpty()) {
+        List<OrdenDTO> ordenesDto = ordenRepository.findAll().stream()
+            .map(orden -> mapper.toDto(orden))
+            .collect(Collectors.toList());
+        if (ordenesDto.isEmpty()) {
             System.out.println("No se encontraron ordenes en la BD.");
         }
 
-        System.out.println("Se encontraron ordenes en la base de datos: " + ordenes.size());
-
-        List<OrdenDTO> ordenesDto = ordenes.stream()
-            .map(orden -> mapper.toDto(orden))
-            .collect(Collectors.toList());
+        System.out.println("Se encontraron ordenes en la base de datos: " + ordenesDto.size());
 
         return ordenesDto;
     }
 
     @Override
-    public List<OrdenDTO> listarPorEquipo(Long idEquipo) {
-        List<OrdenMantenimiento> ordenesPorEquipo = ordenRepository.findByEquipo_IdEquipo(idEquipo);
-        if (ordenesPorEquipo.isEmpty()) {
-            System.out.println("No se encontraron ordenes en la BD para el equipo buscado.");
-        }
-
-        System.out.println("Se encontraron " + ordenesPorEquipo.size() + " ordenes en la BD para el equipo: " + idEquipo);
-
-        List<OrdenDTO> ordenesDto = ordenesPorEquipo.stream()
-            .map(orden -> mapper.toDto(orden))
-            .collect(Collectors.toList());
-
-        return ordenesDto;
+    @Transactional(readOnly = true)
+    public Page<OrdenDTO> listarPorEquipo(Long idEquipo, Pageable pageable) {
+        
+        return ordenRepository.findByEquipo_IdEquipo(idEquipo, pageable)
+                .map(mapper::toDto);
     }
 
     @Override
@@ -202,12 +142,16 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
 
         // solo actualizamos ciertos campos
         orden.setDescripcion(dto.getDescripcion());
-        orden.setEstado(EstadoOrden.valueOf(dto.getEstadoOrden()));
+        if (dto.getEstadoOrden() != null) {
+            orden.setEstado(EstadoOrden.valueOf(dto.getEstadoOrden()));
+        }
         orden.setFechaFin(dto.getFechaPrevistaEjecucion());
         orden.setPrioridad(dto.getPrioridad());
-        orden.setTipo(TipoMantenimiento.valueOf(dto.getTipo()));
-        
+        if (dto.getTipo() != null) {
+            orden.setTipo(TipoMantenimiento.valueOf(dto.getTipo()));
+        }
         OrdenMantenimiento actualizada = ordenRepository.save(orden);
+        
         return mapper.toDto(actualizada);
     }
 

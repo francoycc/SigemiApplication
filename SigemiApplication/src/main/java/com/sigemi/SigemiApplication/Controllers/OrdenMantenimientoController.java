@@ -9,6 +9,9 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,5 +79,13 @@ public class OrdenMantenimientoController {
     @PutMapping("/{id}/finalizar")
     public ResponseEntity<OrdenDTO> finalizarOrden(@PathVariable Long id){
         return ResponseEntity.ok(ordenMantenimientoService.finalizarOrden(id));
+    }
+    
+    @GetMapping("/equipo/{idEquipo}")
+    public ResponseEntity<Page<OrdenDTO>> listarPorEquipo(
+            @PathVariable Long idEquipo,
+            @PageableDefault(size = 10, sort = "fechaCreacion") Pageable pageable) {
+        
+        return ResponseEntity.ok(ordenMantenimientoService.listarPorEquipo(idEquipo, pageable));
     }
 }
