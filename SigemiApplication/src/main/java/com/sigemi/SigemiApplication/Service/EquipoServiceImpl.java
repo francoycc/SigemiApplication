@@ -10,73 +10,31 @@ import com.sigemi.SigemiApplication.Mapper.EquipoMapper;
 import com.sigemi.SigemiApplication.Repository.EquipoRepository;
 import com.sigemi.SigemiApplication.Repository.UbicacionTecnicaRepository;
 import jakarta.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class EquipoServiceImpl implements EquipoService {
-    private final EquipoRepository equipoRepository;
-    private final UbicacionTecnicaRepository ubicacionRepository;
-    private final EquipoMapper mapper;
     
-    @Autowired
-    public EquipoServiceImpl(EquipoRepository equipoRepo,
-            UbicacionTecnicaRepository ubicacionRepo,
-            EquipoMapper equipoMapper){
-        this.equipoRepository = equipoRepo;
-        this.ubicacionRepository = ubicacionRepo;
-        this.mapper = equipoMapper;
-    }
-    
-//    @Override
-//    public Equipo crearEquipo(Equipo equipo) {
-//        return equipoRepository.save(equipo);
-//    }
-//
-//    @Override
-//    public List<Equipo> listarEquipos() {
-//        return equipoRepository.findAll();
-//    }
-//
-//    @Override
-//    public Equipo obtenerPorId(Long id) {
-//        return equipoRepository.findById(id).
-//                orElseThrow(()-> new EntityNotFoundException("Equipo no encontrado"));
-//    }
-//
-//    @Override
-//    public Equipo actualizarEquipo(Long id, Equipo nuevo) {
-//        Equipo actual = obtenerPorId(id);
-//        actual.setNombre(nuevo.getNombre());
-//        actual.setCriticidad(nuevo.getCriticidad());
-//        actual.setTipo(nuevo.getTipo());
-//        actual.setActivo(nuevo.getActivo());
-//        actual.setFrecuencia(nuevo.getFrecuencia());
-//        actual.setObservaciones(nuevo.getObservaciones());
-//        actual.setEstadoOperativo(nuevo.getEstadoOperativo());
-//        actual.setUbicacionTecnica(nuevo.getUbicacionTecnica());
-//        
-//        return equipoRepository.save(actual);
-//    }
-//
-//    @Override
-//    public void deshabilitarEquipo(Long id) {
-//        Equipo equipo = obtenerPorId(id);
-//        equipo.setActivo(Boolean.FALSE);
-//        equipo.setEstadoOperativo(EstadoOperativo.FueraDeServicio);
-//        
-//        equipoRepository.save(equipo);
-//    }
+    private EquipoRepository equipoRepository;
+    private UbicacionTecnicaRepository ubicacionRepository;
+    private EquipoMapper mapper;
+
     @Override
     @Transactional
     public EquipoDTO crearEquipo(EquipoDTO dto){
+        log.info("Intentando crear equipo con código: {}", dto.getCodigoEquipo());
         // validar equipo
         if(equipoRepository.existsByCodigoEquipo(dto.getCodigoEquipo())){
             throw new BusinessException("Ya existe un equipo para el codigo ingresado.");
         }
+        // valido equipo por numero de serie
         if(dto.getNumeroSerie()!= null && equipoRepository.existsByNumeroSerie(dto.getNumeroSerie())){
             throw new BusinessException("Ya existe un equipo para el numero de serie ingresado.");
         }
@@ -85,17 +43,25 @@ public class EquipoServiceImpl implements EquipoService {
                 .orElseThrow(() -> new EntityNotFoundException("Ubicación técnica no encontrada"));
         
         Equipo equipo = mapper.toEntity(dto);
-        equipo.setEstadoOperativo(EstadoOperativo.valueOf(dto.getEstadoOperativo()));
-        equipo.setCriticidad(Criticidad.valueOf(dto.getCriticidad()));
+        
         equipo.setUbicacionTecnica(ubicacion);
         equipo.setActivo(Boolean.TRUE);
         
+        try {
+            equipo.setEstadoOperativo(EstadoOperativo.valueOf(dto.getEstadoOperativo()));
+            equipo.setCriticidad(Criticidad.valueOf(dto.getCriticidad()));
+        } catch (IllegalArgumentException e) {
+            throw new BusinessException("Valor de Estado Operativo o Criticidad inválido.");
+        }
+        
         Equipo guardado = equipoRepository.save(equipo);
+        log.info("Equipo creado exitosamente con ID: {}", guardado.getIdEquipo());
+        
         return mapper.toDTO(guardado);
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public EquipoDTO buscarPorId(Long id) {
         Equipo equipo = equipoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Equipo no encontrado con ID: " + id));
@@ -103,38 +69,49 @@ public class EquipoServiceImpl implements EquipoService {
     }
 
     @Override
-    public List<EquipoDTO> listarEquipos() {
-        List<Equipo> equipos = equipoRepository.findAll();
-
+    @Transactional(readOnly = true)
+    public Page<EquipoDTO> listarEquipos(Pageable pageable) {
+        log.debug("Listando equipos paginados");
+        Page<EquipoDTO> equipos = equipoRepository.findAll(pageable)
+                .map(mapper::toDTO);
+        
         if (equipos.isEmpty()) {
-            System.out.println("No se encontraron equipos en la BD.");
+            log.debug("No se encontraron equipos en la BD.");
         }
-
-        System.out.println("Se encontraron equipos en la base de datos: " + equipos.size());
-
-        List<EquipoDTO> equiposDto = equipos.stream()
-            .map(equipo -> mapper.toDTO(equipo))
-            .collect(Collectors.toList());
-
-        return equiposDto;
+        return equipos;
     }
 
     @Override
     @Transactional
     public EquipoDTO actualizarEquipo(Long id, EquipoDTO dto) {
+        log.info("Actualizando equipo ID: {}", id);
         Equipo equipo = equipoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No se encuentra el equipo para el ID: " + id));
         
-        equipo.setCriticidad(Criticidad.valueOf(dto.getCriticidad()));
-        equipo.setEstadoOperativo(EstadoOperativo.valueOf(dto.getEstadoOperativo()));
-        equipo.setFrecuencia(dto.getFrecuencia());
         equipo.setNombre(dto.getNombre());
         equipo.setMarca(dto.getMarca());
         equipo.setModelo(dto.getModelo());
         equipo.setTipo(dto.getTipo());
+        equipo.setFrecuencia(dto.getFrecuencia());
+        equipo.setNumeroSerie(dto.getNumeroSerie()); 
+        
+        if (dto.getCriticidad() != null) {
+            equipo.setCriticidad(Criticidad.valueOf(dto.getCriticidad()));
+        }
+        if (dto.getEstadoOperativo() != null) {
+            equipo.setEstadoOperativo(EstadoOperativo.valueOf(dto.getEstadoOperativo()));
+        }
+        
+        if (dto.getUbicacionTecnicaId() != null && 
+            !dto.getUbicacionTecnicaId().equals(equipo.getUbicacionTecnica().getIdUbicacion())) {
+            
+            UbicacionTecnica nuevaUbicacion = ubicacionRepository.findById(dto.getUbicacionTecnicaId())
+                    .orElseThrow(() -> new EntityNotFoundException("Nueva ubicación no encontrada"));
+            equipo.setUbicacionTecnica(nuevaUbicacion);
+        }
         
         Equipo guardado = equipoRepository.save(equipo);
-        return mapper.toDTO(equipo);
+        return mapper.toDTO(guardado);
     }
 
     @Override
@@ -142,7 +119,10 @@ public class EquipoServiceImpl implements EquipoService {
     public void desactivarEquipo(Long id) {
         Equipo desactivado = equipoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No existe equipo para el ID: " + id));
+        
         desactivado.setEstadoOperativo(EstadoOperativo.FueraDeServicio);
+        desactivado.setActivo(false);
+        
         equipoRepository.save(desactivado);
     }
     
