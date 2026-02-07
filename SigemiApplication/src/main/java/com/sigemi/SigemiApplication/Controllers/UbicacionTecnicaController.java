@@ -23,34 +23,6 @@ public class UbicacionTecnicaController {
     public UbicacionTecnicaController(UbicacionTecnicaService uService){
         this.ubicacionService = uService;
     }
-//    @PostMapping
-//    public UbicacionTecnica crear(@RequestBody UbicacionTecnica ubicacion) {
-//        return ubicacionService.crearUbicacion(ubicacion);
-//    }
-//
-//    @PutMapping("/{id}")
-//    public UbicacionTecnica modificar(@PathVariable Long id, @RequestBody UbicacionTecnica ubicacion) {
-//        return ubicacionService.modificarUbicacion(id, ubicacion);
-//    }
-//
-//    @PutMapping("/desactivar/{id}")
-//    public void desactivar(@PathVariable Long id) {
-//        ubicacionService.desactivarUbicacion(id);
-//    }
-//
-//    @GetMapping
-//    public List<UbicacionTecnica> listar() {
-//        return ubicacionService.listarUbicaciones();
-//    }
-//
-//    @GetMapping("/{id}")
-//    public UbicacionTecnica obtenerPorId(@PathVariable Long id) {
-//        return ubicacionService.obtenerPorId(id);
-//    }
-//    @GetMapping("/{idPadre}")
-//    public List<UbicacionTecnica> obtenerPorIdPadre(@PathVariable Long idPadre) {
-//        return ubicacionService.listarUbicacionesPorPadre(idPadre);
-//    }
     
      
     @PostMapping
@@ -80,5 +52,13 @@ public class UbicacionTecnicaController {
     public ResponseEntity<Void> desactivar(@PathVariable Long id) {
         ubicacionService.desactivarUbicacion(id);
         return ResponseEntity.noContent().build();
+    }
+    
+    @GetMapping("/hijos")
+    public ResponseEntity<List<UbicacionTecnicaDTO>> obtenerPorJerarquia(
+            @RequestParam(required = false) Long padreId) {
+        
+        List<UbicacionTecnicaDTO> lista = ubicacionService.listarUbicacionesPorPadre(padreId);
+        return ResponseEntity.ok(lista);
     }
 }

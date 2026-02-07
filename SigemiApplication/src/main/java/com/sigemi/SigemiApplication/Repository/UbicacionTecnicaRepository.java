@@ -7,5 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UbicacionTecnicaRepository extends JpaRepository<UbicacionTecnica, Long> {
     Boolean existsByCodigo(String codigo);
-    List<UbicacionTecnica> findByUbicacionPadre_IdUbicacion(Long idUbicacionTecnicaPadre);
+    
+    // Buscar ubicaciones que son hijas de un padre específico
+    List<UbicacionTecnica> findByUbicacionPadre_IdUbicacion(Long idPadre);
+
+    // Buscar ubicaciones raíz (donde el padre es NULL)
+    List<UbicacionTecnica> findByUbicacionPadreIsNull();
 }

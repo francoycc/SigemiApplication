@@ -24,45 +24,6 @@ public class UbicacionTecnicaServiceImpl implements UbicacionTecnicaService {
         this.ubicacionRepository = ubiRepository;
         this.mapper = mapperUbicacion;
     }
-    
-//    @Override
-//    public UbicacionTecnica crearUbicacion(UbicacionTecnica ubicacion) {
-//        ubicacion.setEstado(EstadoOperativo.Operativo);
-//        return ubicacionRepository.save(ubicacion);
-//    }
-//
-//    @Override
-//    public UbicacionTecnica modificarUbicacion(Long id, UbicacionTecnica ubicacion) {
-//        UbicacionTecnica actual = obtenerPorId(id);
-//        actual.setEstado(ubicacion.getEstado());
-//        actual.setNombre(ubicacion.getNombre());
-//        actual.setTipo(ubicacion.getTipo());
-//        actual.setEquipos(ubicacion.getEquipos());
-//        return ubicacionRepository.save(actual);
-//    }
-//
-//    @Override
-//    public void desactivarUbicacion(Long id) {
-//        UbicacionTecnica ubicacion = obtenerPorId(id);
-//        ubicacion.setEstado(EstadoOperativo.FueraDeServicio);
-//        ubicacionRepository.save(ubicacion);
-//    }
-//
-//    @Override
-//    public List<UbicacionTecnica> listarUbicaciones() {
-//        return ubicacionRepository.findAll();
-//    }
-//
-//    @Override
-//    public UbicacionTecnica obtenerPorId(Long id) {
-//        return ubicacionRepository.findById(id)
-//                .orElseThrow(()-> new EntityNotFoundException("Ubicacion no encontrada"));
-//    }
-//
-//    @Override
-//    public List<UbicacionTecnica> listarUbicacionesPorPadre(Long idPadre) {
-//        return ubicacionRepository.findByUbicacionPadre_IdUbicacion(idPadre);
-//    }
 
     @Override
     @Transactional
@@ -72,13 +33,18 @@ public class UbicacionTecnicaServiceImpl implements UbicacionTecnicaService {
             throw new BusinessException("Ya existe una ubicacion para el codigo ingresado.");
         }
         
-        UbicacionTecnica ubicacionPadre = ubicacionRepository.findById(dto.getIdPadre())
-            .orElseThrow(() -> new EntityNotFoundException("Ubicación técnica no encontrada"));
-        
         UbicacionTecnica ubicacion = mapper.toEntity(dto);
         ubicacion.setEstado(EstadoOperativo.valueOf(dto.getEstado()));
-        ubicacion.setUbicacionPadre(ubicacionPadre);
-        //falta sububicaciones
+        
+        if (dto.getIdPadre() != null) {
+            // Si trae ID padre, lo buscamos y asignamos
+            UbicacionTecnica ubicacionPadre = ubicacionRepository.findById(dto.getIdPadre())
+                .orElseThrow(() -> new EntityNotFoundException("Ubicación padre no encontrada"));
+            ubicacion.setUbicacionPadre(ubicacionPadre);
+        } else {
+            // Si NO trae ID padre, es una raíz (Planta). Se deja null explícitamente.
+            ubicacion.setUbicacionPadre(null);
+        }
         
         UbicacionTecnica guardada = ubicacionRepository.save(ubicacion);
         
@@ -109,14 +75,19 @@ public class UbicacionTecnicaServiceImpl implements UbicacionTecnicaService {
 
     @Override
     public List<UbicacionTecnicaDTO> listarUbicacionesPorPadre(Long idPadre) {
-        List<UbicacionTecnica> ubicaciones = ubicacionRepository.findByUbicacionPadre_IdUbicacion(idPadre);
-        if (ubicaciones.isEmpty()) {
-            System.out.println("No se encontraron equipos en la BD.");
+        List<UbicacionTecnica> ubicaciones;
+        
+        if (idPadre == null) {
+            ubicaciones = ubicacionRepository.findByUbicacionPadreIsNull();
+        } else {
+            // buscamos sus hijos 
+            ubicaciones = ubicacionRepository.findByUbicacionPadre_IdUbicacion(idPadre);
         }
-        List<UbicacionTecnicaDTO> ubicacionesDto = ubicaciones.stream()
-            .map(ubicacion -> mapper.toDTO(ubicacion))
-            .collect(Collectors.toList());
-        return ubicacionesDto;
+
+        // Convertimos la lista de Entidades a DTOs
+        return ubicaciones.stream()
+                .map(mapper::toDTO)
+                .collect(Collectors.toList());
     }
     
     @Override
@@ -142,4 +113,5 @@ public class UbicacionTecnicaServiceImpl implements UbicacionTecnicaService {
         ubicacion.setEstado(EstadoOperativo.FueraDeServicio);
         ubicacionRepository.save(ubicacion);
     }
+    
 }
