@@ -17,42 +17,56 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-            // Activar CORS usando nuestra configuración
+        http
+            // 1. Desactivar CSRF: Es necesario para que funcionen las peticiones POST/PUT desde React
+            // sin necesidad de tokens de sesión (cookies).
+            .csrf(csrf -> csrf.disable())
+            
+            // 2. Configurar CORS: Vincula la configuración de abajo para aceptar peticiones desde localhost:3000
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            // Configurar Permisos de URL
+            
+            // 3. Gestión de Permisos de URL (Aquí solucionamos el 403)
             .authorizeHttpRequests(auth -> auth
-                // PERMITIR TODO en /api/auth/** (Login, Registro, etc.)
+                // Permitir acceso libre al Login
                 .requestMatchers("/api/auth/**").permitAll()
-                // (Opcional) Permitir acceso a recursos estáticos si los hubiera
+                
+                // IMPORTANTE: Permitir acceso libre a Ubicaciones y sus hijos
+                // Esto soluciona el error en ubicacionService.js
+                .requestMatchers("/api/ubicaciones/**").permitAll()
+                
+                // RECOMENDACIÓN DEV: Permitir todas las rutas de la API por ahora
+                // para que puedas desarrollar Equipos, Ordenes, etc. sin volver a tocar este archivo.
+                .requestMatchers("/api/**").permitAll()
+                
+                // Permitir acceso a recursos estáticos o de error
                 .requestMatchers("/error").permitAll()
-                // BLOQUEAR el resto (requiere autenticación)
-                // Por ahora, para facilitar tus pruebas, podrías usar .permitAll() aquí también
-                // pero lo correcto es .authenticated()
+                
+                // Cualquier otra solicitud requerirá autenticación (si la implementas más adelante)
                 .anyRequest().authenticated() 
             );
 
         return http.build();
     }
 
-    // Configuracion CORS para Spring Security
+    // Configuración detallada de CORS (Intercambio de recursos de origen cruzado)
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Permitir el origen del Frontend
+        // A. Origen Permitido: Tu Frontend
         configuration.setAllowedOrigins(List.of("http://localhost:3000"));
         
-        // Permitir todos los métodos HTTP (GET, POST, PUT, DELETE, OPTIONS)
+        // B. Métodos HTTP Permitidos: Necesarios para el CRUD completo
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         
-        // Permitir todos los headers (Authorization, Content-Type, etc.)
+        // C. Cabeceras Permitidas: Authorization, Content-Type, etc.
         configuration.setAllowedHeaders(List.of("*"));
         
-        // Permitir credenciales (cookies, headers de auth)
+        // D. Permitir credenciales (cookies/tokens)
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // Aplicar esta configuración a todas las rutas
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }

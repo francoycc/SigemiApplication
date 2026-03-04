@@ -1,18 +1,21 @@
 package com.sigemi.SigemiApplication.DTO;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 
 
 public class UbicacionTecnicaDTO {
     private Long idUbicacion;
-    @NotNull
+    @NotBlank(message = "El código técnico es obligatorio")
+    @Size(max = 50, message = "El código no puede exceder los 50 caracteres")
     private String codigo;
-    @NotNull
+    @NotBlank(message = "El nombre de la ubicacion es obligatorio")
+    @Size(max = 100, message = "El nombre no puede exceder los 100 caracteres")
     private String nombre;
-    
+    @NotBlank(message = "El tipo de ubicación es obligatorio")
     private String tipo;
-    
+    @NotBlank(message = "El estado operativo de la ubicación es obligatorio")
     private String estado;
     
     private Long idPadre;

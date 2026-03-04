@@ -1,51 +1,64 @@
-
 package com.sigemi.SigemiApplication.Excepciones;
 
 import jakarta.persistence.EntityNotFoundException;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-@ControllerAdvice
+@Slf4j
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Manejar cuando no se encuentra un recurso (Devuelve 404 Not Found)
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleEntityNotFound(EntityNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-    }
-
-    // Manejar errores de negocio propios (Devuelve 400 Bad Request)
+    // Manejo de Excepciones de Negocio 
     @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<String> handleBusinessException(BusinessException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    public ResponseEntity<Map<String, Object>> handleBusinessException(BusinessException ex) {
+        log.warn("Excepción de Negocio capturada: {}", ex.getMessage());
+        return construirRespuesta(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    // Manejar errores de validacion de DTOs (Devuelve 400 Bad Request con detalles)
+    // Manejo de Entidad no Encontrada 
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleEntityNotFoundException(EntityNotFoundException ex) {
+        log.warn("Entidad no encontrada: {}", ex.getMessage());
+        return construirRespuesta(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    //  Manejo de Validaciones de los DTOs 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
+    public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errores = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
+            errores.put(fieldName, errorMessage);
         });
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        
+        log.warn("Error de validación de formulario: {}", errores);
+        
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", "Error de Validación de Datos");
+        body.put("detalles", errores); // Mandamos la lista de campos fallidos al Frontend
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
-    // Manejar cualquier otra excepcion no controlada (Devuelve 500 Internal Server Error)
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralException(Exception ex) {
-        // Aquí podrías agregar un log.error(ex.getMessage()) si tuvieras logger
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Ocurrió un error interno en el servidor. Por favor contacte al administrador.");
+    // Metodo auxiliar para estandarizar el JSON de error
+    private ResponseEntity<Map<String, Object>> construirRespuesta(HttpStatus status, String mensaje) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", status.value());
+        body.put("error", status.getReasonPhrase());
+        body.put("message", mensaje);
+        return new ResponseEntity<>(body, status);
     }
 }
