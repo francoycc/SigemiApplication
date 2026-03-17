@@ -1,6 +1,7 @@
 package com.sigemi.SigemiApplication.Service;
 
 import com.sigemi.SigemiApplication.DTO.EquipoDTO;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,4 +14,6 @@ public interface EquipoService {
     Page<EquipoDTO> listarEquipos(Pageable pageable);
     EquipoDTO actualizarEquipo(Long id, EquipoDTO dto);
     void desactivarEquipo(Long id);
+    
+    List<EquipoDTO> buscarPorUbicacion(Long idUbicacion);
 }

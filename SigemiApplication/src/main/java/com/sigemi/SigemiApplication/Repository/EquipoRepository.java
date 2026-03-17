@@ -1,6 +1,7 @@
 package com.sigemi.SigemiApplication.Repository;
 
 import com.sigemi.SigemiApplication.Entidades.Equipo;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -13,4 +14,6 @@ public interface EquipoRepository extends JpaRepository<Equipo, Long> {
     
     @EntityGraph(attributePaths = {"ubicacionTecnica"})
     Page<Equipo> findAll(Pageable pageable);
+    
+    List<Equipo> findByUbicacionTecnica_IdUbicacion(Long idUbicacion);
 }

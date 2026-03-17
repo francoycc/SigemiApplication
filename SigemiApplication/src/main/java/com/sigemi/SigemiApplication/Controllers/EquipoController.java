@@ -50,4 +50,9 @@ public class EquipoController {
         equipoService.desactivarEquipo(id);
         return ResponseEntity.noContent().build();
     }
+    
+    @GetMapping("/ubicacion/{idUbicacion}")
+    public ResponseEntity<List<EquipoDTO>> listarPorUbicacion(@PathVariable Long idUbicacion) {
+        return ResponseEntity.ok(equipoService.buscarPorUbicacion(idUbicacion));
+    }
 }

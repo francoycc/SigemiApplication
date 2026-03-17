@@ -10,6 +10,7 @@ import com.sigemi.SigemiApplication.Mapper.EquipoMapper;
 import com.sigemi.SigemiApplication.Repository.EquipoRepository;
 import com.sigemi.SigemiApplication.Repository.UbicacionTecnicaRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,28 +23,31 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class EquipoServiceImpl implements EquipoService {
     
-    private EquipoRepository equipoRepository;
-    private UbicacionTecnicaRepository ubicacionRepository;
-    private EquipoMapper mapper;
+    // Solución 1: Se agrega la palabra reservada 'final' para que Lombok inyecte las dependencias
+    private final EquipoRepository equipoRepository;
+    private final UbicacionTecnicaRepository ubicacionRepository;
+    private final EquipoMapper mapper;
 
     @Override
     @Transactional
     public EquipoDTO crearEquipo(EquipoDTO dto){
         log.info("Intentando crear equipo con código: {}", dto.getCodigoEquipo());
-        // validar equipo
+        
         if(equipoRepository.existsByCodigoEquipo(dto.getCodigoEquipo())){
-            throw new BusinessException("Ya existe un equipo para el codigo ingresado.");
+            throw new BusinessException("Ya existe un equipo para el código ingresado.");
         }
-        // valido equipo por numero de serie
-        if(dto.getNumeroSerie()!= null && equipoRepository.existsByNumeroSerie(dto.getNumeroSerie())){
-            throw new BusinessException("Ya existe un equipo para el numero de serie ingresado.");
+        
+        if(dto.getNumeroSerie() != null && equipoRepository.existsByNumeroSerie(dto.getNumeroSerie())){
+            throw new BusinessException("Ya existe un equipo para el número de serie ingresado.");
         }
-        //traigo ubicacion
-        UbicacionTecnica ubicacion = ubicacionRepository.findById(dto.getUbicacionTecnicaId())
-                .orElseThrow(() -> new EntityNotFoundException("Ubicación técnica no encontrada"));
+        
+        UbicacionTecnica ubicacion = null;
+        if (dto.getUbicacionTecnicaId() != null) {
+            ubicacion = ubicacionRepository.findById(dto.getUbicacionTecnicaId())
+                    .orElseThrow(() -> new EntityNotFoundException("Ubicación técnica no encontrada"));
+        }
         
         Equipo equipo = mapper.toEntity(dto);
-        
         equipo.setUbicacionTecnica(ubicacion);
         equipo.setActivo(Boolean.TRUE);
         
@@ -72,8 +76,7 @@ public class EquipoServiceImpl implements EquipoService {
     @Transactional(readOnly = true)
     public Page<EquipoDTO> listarEquipos(Pageable pageable) {
         log.debug("Listando equipos paginados");
-        Page<EquipoDTO> equipos = equipoRepository.findAll(pageable)
-                .map(mapper::toDTO);
+        Page<EquipoDTO> equipos = equipoRepository.findAll(pageable).map(mapper::toDTO);
         
         if (equipos.isEmpty()) {
             log.debug("No se encontraron equipos en la BD.");
@@ -102,12 +105,15 @@ public class EquipoServiceImpl implements EquipoService {
             equipo.setEstadoOperativo(EstadoOperativo.valueOf(dto.getEstadoOperativo()));
         }
         
-        if (dto.getUbicacionTecnicaId() != null && 
-            !dto.getUbicacionTecnicaId().equals(equipo.getUbicacionTecnica().getIdUbicacion())) {
-            
+        // Solución 2: Prevención de NPE experto al comprobar la ubicación técnica actual
+        Long currentUbiId = equipo.getUbicacionTecnica() != null ? equipo.getUbicacionTecnica().getIdUbicacion() : null;
+        
+        if (dto.getUbicacionTecnicaId() != null && !dto.getUbicacionTecnicaId().equals(currentUbiId)) {
             UbicacionTecnica nuevaUbicacion = ubicacionRepository.findById(dto.getUbicacionTecnicaId())
                     .orElseThrow(() -> new EntityNotFoundException("Nueva ubicación no encontrada"));
             equipo.setUbicacionTecnica(nuevaUbicacion);
+        } else if (dto.getUbicacionTecnicaId() == null) {
+            equipo.setUbicacionTecnica(null);
         }
         
         Equipo guardado = equipoRepository.save(equipo);
@@ -126,5 +132,13 @@ public class EquipoServiceImpl implements EquipoService {
         equipoRepository.save(desactivado);
     }
     
-    
+    @Override
+    @Transactional(readOnly = true)
+    public List<EquipoDTO> buscarPorUbicacion(Long idUbicacion) {
+        log.debug("Buscando equipos para la ubicación ID: {}", idUbicacion);
+        return equipoRepository.findByUbicacionTecnica_IdUbicacion(idUbicacion)
+                .stream()
+                .map(mapper::toDTO)
+                .toList();
+    }
 }
