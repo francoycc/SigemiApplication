@@ -16,20 +16,20 @@ import com.sigemi.SigemiApplication.Repository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDate;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class TareaMantenimientoServiceImpl implements TareaMantenimientoService {
 
-    @Autowired
     private final TareaMantenimientoRepository tareaMantenimientoRepository;
-    @Autowired
     private final UsuarioRepository usuarioRepository;
-    @Autowired
     private final OrdenMantenimientoRepository ordenRepository;
-    @Autowired
     private final TareaMapper tareaMapper;
     
     public TareaMantenimientoServiceImpl(TareaMantenimientoRepository tareaMantenimientoRepo,
@@ -41,53 +41,12 @@ public class TareaMantenimientoServiceImpl implements TareaMantenimientoService 
         this.ordenRepository = ordenRepo;
         this.tareaMapper = mapper;
     }
-    
-//    @Override
-//    public TareaMantenimiento crearTarea(TareaMantenimiento tarea) {
-//        tarea.setEstado(EstadoTarea.Creada);
-//        return tareaMantenimientoRepository.save(tarea);
-//    }
-//
-//    @Override
-//    public List<TareaMantenimiento> listarPorOrden(Long idOrden) {
-//        return tareaMantenimientoRepository.findByOrden_IdOrden(idOrden);
-//    }
-//
-//    @Override
-//    public List<TareaMantenimiento> listarTareas() {
-//        return tareaMantenimientoRepository.findAll();
-//    }
-//
-//    @Override
-//    public TareaMantenimiento obtenerPorId(Long id) {
-//        return tareaMantenimientoRepository.findById(id)
-//                .orElseThrow(() -> new EntityNotFoundException("Tarea no encontrada"));
-//    }
-//        
-//    
-//    @Override
-//    public TareaMantenimiento actualizarTarea(Long id, TareaMantenimiento nueva) {
-//        TareaMantenimiento actual = obtenerPorId(id);
-//        actual.setDescripcion(nueva.getDescripcion());
-//        actual.setTipo(nueva.getTipo());
-//        actual.setEstado(EstadoTarea.Creada);
-//        actual.setTecnico(nueva.getTecnico());
-//        actual.setTiempoInvertidoHoras(nueva.getTiempoInvertidoHoras());
-//        actual.setEvidencias(nueva.getEvidencias());
-//        actual.setFechaEjecucion(nueva.getFechaEjecucion());
-//        return tareaMantenimientoRepository.save(actual);
-//    }
-//
-//    @Override
-//    public void pausarTarea(Long id) {
-//        TareaMantenimiento tarea = obtenerPorId(id);
-//        tarea.setEstado(EstadoTarea.Pausada);
-//        tareaMantenimientoRepository.save(tarea);
-//    }
 
     @Override
+    @Transactional
     public TareaDTO crearTarea(TareaDTO dto) {
-        // validar usuario
+        log.info("Iniciando transacción para crear nueva Tarea de Mantenimiento");
+// validar usuario
         Usuario tecnico = usuarioRepository.findById(dto.getTecnicoId())
                 .orElseThrow(() -> new EntityNotFoundException("No existe el tecnico para el ID ingresado:" + dto.getTecnicoId()));
         
@@ -120,6 +79,7 @@ public class TareaMantenimientoServiceImpl implements TareaMantenimientoService 
 
     @Override
     public List<TareaDTO> listarTareas() {
+        log.info("Listado de Tareas: ");
         List<TareaMantenimiento> tareas = tareaMantenimientoRepository.findAll();
         return tareas.stream()
                 .map(tarea -> tareaMapper.toDTO(tarea))
@@ -134,7 +94,9 @@ public class TareaMantenimientoServiceImpl implements TareaMantenimientoService 
     }
 
     @Override
+    @Transactional
     public TareaDTO actualizarTarea(Long id, TareaDTO dto) {
+        log.info("Iniciando actualización para la Tarea ID: {}", id);
         TareaMantenimiento tarea = tareaMantenimientoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Tarea no encontrada"));
         
