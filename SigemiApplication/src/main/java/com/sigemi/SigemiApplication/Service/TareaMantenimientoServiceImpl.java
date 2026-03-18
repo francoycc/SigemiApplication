@@ -32,16 +32,6 @@ public class TareaMantenimientoServiceImpl implements TareaMantenimientoService 
     private final OrdenMantenimientoRepository ordenRepository;
     private final TareaMapper tareaMapper;
     
-    public TareaMantenimientoServiceImpl(TareaMantenimientoRepository tareaMantenimientoRepo,
-                            UsuarioRepository usuarioRepo,
-                            OrdenMantenimientoRepository ordenRepo,
-                            TareaMapper mapper){
-        this.tareaMantenimientoRepository = tareaMantenimientoRepo;
-        this.usuarioRepository = usuarioRepo;
-        this.ordenRepository = ordenRepo;
-        this.tareaMapper = mapper;
-    }
-
     @Override
     @Transactional
     public TareaDTO crearTarea(TareaDTO dto) {
