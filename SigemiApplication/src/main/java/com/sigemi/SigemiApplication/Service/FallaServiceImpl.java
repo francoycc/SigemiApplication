@@ -75,7 +75,7 @@ public class FallaServiceImpl implements FallaService {
         TareaMantenimiento tarea = new TareaMantenimiento();
         tarea.setDescripcion("Atender falla: " + falla.getDescripcion());
         tarea.setTipo(TipoMantenimiento.Correctivo);
-        tarea.setEstado(EstadoTarea.Creada);
+        tarea.setEstado(EstadoTarea.Pendiente);
         tarea.setFechaEjecucion(LocalDate.now());
 
         if (dto.getTecnicoAsignadoId() != null) {

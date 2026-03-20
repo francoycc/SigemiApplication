@@ -2,7 +2,9 @@ package com.sigemi.SigemiApplication.Enums;
 
 
 public enum EstadoTarea {
-    Creada,
+    Pendiente,
+    EnProgreso,
     Pausada,
-    Completada
+    Completada,
+    Cancelada
 }

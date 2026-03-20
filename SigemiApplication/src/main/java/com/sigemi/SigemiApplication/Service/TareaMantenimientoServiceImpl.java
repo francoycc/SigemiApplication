@@ -36,7 +36,7 @@ public class TareaMantenimientoServiceImpl implements TareaMantenimientoService 
     @Transactional
     public TareaDTO crearTarea(TareaDTO dto) {
         log.info("Iniciando transacción para crear nueva Tarea de Mantenimiento");
-// validar usuario
+        // validar usuario
         Usuario tecnico = usuarioRepository.findById(dto.getTecnicoId())
                 .orElseThrow(() -> new EntityNotFoundException("No existe el tecnico para el ID ingresado:" + dto.getTecnicoId()));
         
@@ -61,6 +61,7 @@ public class TareaMantenimientoServiceImpl implements TareaMantenimientoService 
 
     @Override
     public List<TareaDTO> listarPorOrden(Long idOrden) {
+        log.info("Listado de Tareas por Orden de mantenimiento con id: {} ", idOrden);
         List<TareaMantenimiento> tareasPorOrden = tareaMantenimientoRepository.findByOrden_IdOrden(idOrden);
         return tareasPorOrden.stream()
                 .map(tarea -> tareaMapper.toDTO(tarea))
@@ -78,6 +79,7 @@ public class TareaMantenimientoServiceImpl implements TareaMantenimientoService 
 
     @Override
     public TareaDTO obtenerPorId(Long id) {
+        log.info("Tarea encontrada con id: {}", id);
         TareaMantenimiento tarea = tareaMantenimientoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No existe la tarea para el ID ingresa:" + id));
         return tareaMapper.toDTO(tarea);
@@ -107,6 +109,7 @@ public class TareaMantenimientoServiceImpl implements TareaMantenimientoService 
 
     @Override
     public void pausarTarea(Long id) {
+        log.info("EstadoTarea con id {}: Pausada", id);
         TareaMantenimiento tarea = tareaMantenimientoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Tarea no encontrada"));
         tarea.setEstado(EstadoTarea.Pausada);
@@ -115,6 +118,7 @@ public class TareaMantenimientoServiceImpl implements TareaMantenimientoService 
 
     @Override
     public List<TareaDTO> listarPorTecnico(Long idTecnico) {
+        log.info("Listado de Tareas Asignadas al tecnico con id: {} ", idTecnico);
         List<TareaMantenimiento> tareasPorTecnico = tareaMantenimientoRepository.findByTecnico_IdUsuario(idTecnico);
         return tareasPorTecnico.stream()
                 .map(tarea -> tareaMapper.toDTO(tarea))
