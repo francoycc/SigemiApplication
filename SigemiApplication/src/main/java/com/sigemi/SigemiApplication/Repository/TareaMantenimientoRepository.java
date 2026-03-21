@@ -11,8 +11,8 @@ public interface TareaMantenimientoRepository extends JpaRepository<TareaManteni
     @EntityGraph(attributePaths = {"equipo"})
     List<TareaMantenimiento> findAll();
     
-    // Para cuando necesites ver el historial de un equipo específico
-    List<TareaMantenimiento> findByEquipo_IdEquipo(Long idEquipo);
+//    Para cuando necesites ver el historial de un equipo específico
+//    List<TareaMantenimiento> findByEquipo_IdEquipo(Long idEquipo);
     List<TareaMantenimiento> findByOrden_IdOrden(Long idOrden);
     
     //Busca todas las tareas asignadas a un tecnico especifico.
