@@ -5,7 +5,7 @@ import java.util.List;
 import jakarta.validation.constraints.*;
 
 public class OrdenDTO {
-    private Long id;
+    private Long idOrden;
     @NotNull
     private String tipo;
 
@@ -37,12 +37,12 @@ public class OrdenDTO {
 
     
 
-    public Long getId() {
-        return id;
+    public Long getIdOrden() {
+        return idOrden;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdOrden(Long id) {
+        this.idOrden = id;
     }
 
     public String getTipo() {

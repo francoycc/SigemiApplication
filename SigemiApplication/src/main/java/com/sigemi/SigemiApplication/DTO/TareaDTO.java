@@ -5,7 +5,7 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
 public class TareaDTO {
-    private Long id;
+    private Long idTarea;
     
     private String tipo; // mapeado desde el enum TipoMantenimiento
     private String descripcion;
@@ -22,12 +22,12 @@ public class TareaDTO {
     @NotBlank
     private String tecnicoNombre; 
 
-    public Long getId() {
-        return id;
+    public Long getIdTarea() {
+        return idTarea;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdTarea(Long id) {
+        this.idTarea = id;
     }
 
     public String getDescripcion() {
