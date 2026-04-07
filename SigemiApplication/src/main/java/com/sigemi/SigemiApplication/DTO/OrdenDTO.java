@@ -10,13 +10,13 @@ public class OrdenDTO {
     private String tipo;
 
     @NotNull
-    private Long equipoId;
-    
-    private String equipoNombre;
+    private Long idEquipo;
+    private String equipoNombre; 
 
     @NotNull
-    private Long supervisorId;
-
+    private Long idSupervisor;
+    private String supervisorNombre;
+    
     @NotNull
     private LocalDate fechaCreacion;
     
@@ -53,12 +53,12 @@ public class OrdenDTO {
         this.tipo = tipo;
     }
 
-    public Long getEquipoId() {
-        return equipoId;
+    public Long getIdEquipo() {
+        return idEquipo;
     }
 
-    public void setEquipoId(Long equipoId) {
-        this.equipoId = equipoId;
+    public void setIdEquipo(Long equipoId) {
+        this.idEquipo = equipoId;
     }
 
     public String getEquipoNombre() {
@@ -69,12 +69,20 @@ public class OrdenDTO {
         this.equipoNombre = equipoNombre;
     }
     
-    public Long getSupervisorId() {
-        return supervisorId;
+    public Long getIdSupervisor() {
+        return idSupervisor;
     }
 
-    public void setSupervisorId(Long supervisorId) {
-        this.supervisorId = supervisorId;
+    public void setIdSupervisor(Long supervisorId) {
+        this.idSupervisor = supervisorId;
+    }
+    
+    public String getSupervisorNombre() {
+        return supervisorNombre;
+    }
+
+    public void setSupervisorNombre(String supervisorNombre) {
+        this.supervisorNombre = supervisorNombre;
     }
 
     public LocalDate getFechaCreacion() {

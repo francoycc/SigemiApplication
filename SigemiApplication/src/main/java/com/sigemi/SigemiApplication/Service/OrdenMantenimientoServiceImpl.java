@@ -45,16 +45,16 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
     public OrdenDTO crearOrden(OrdenDTO dto, String usuarioCreador) {
         
         // Validar supervisor
-        Usuario supervisor = usuarioRepository.findById(dto.getSupervisorId())
-            .orElseThrow(() -> new EntityNotFoundException("Supervisor no encontrado con ID: " + dto.getSupervisorId()));
+        Usuario supervisor = usuarioRepository.findById(dto.getIdSupervisor())
+            .orElseThrow(() -> new EntityNotFoundException("Supervisor no encontrado con ID: " + dto.getIdSupervisor()));
 
         if (!RolUsuario.Supervisor.equals(supervisor.getRol().toString())) {
             throw new BusinessException("Usuario no tiene rol de supervisor");
         }
 
         // validar equipo
-        Equipo equipo = equipoRepository.findById(dto.getEquipoId())
-            .orElseThrow(() -> new EntityNotFoundException("Equipo no encontrado con ID: " + dto.getEquipoId()));
+        Equipo equipo = equipoRepository.findById(dto.getIdEquipo())
+            .orElseThrow(() -> new EntityNotFoundException("Equipo no encontrado con ID: " + dto.getIdEquipo()));
 
         // Crear oden
         OrdenMantenimiento orden = new OrdenMantenimiento();

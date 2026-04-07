@@ -13,10 +13,10 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring")
 public interface OrdenMapper {
     
-    @Mapping(source = "equipo.idEquipo", target = "equipoId")
+    @Mapping(source = "equipo.idEquipo", target = "idEquipo")
     @Mapping(source = "equipo.nombre", target = "equipoNombre")
-    @Mapping(source = "supervisor.idUsuario", target = "supervisorId")
-    @Mapping(target = "nombresTecnicos", ignore = true)
+    @Mapping(source = "supervisor.idUsuario", target = "idSupervisor")
+    @Mapping(source = "supervisor.nombreUsuario", target = "supervisorNombre")
     OrdenDTO toDto(OrdenMantenimiento entidad);
     
     @Mapping(target = "equipo", ignore = true)

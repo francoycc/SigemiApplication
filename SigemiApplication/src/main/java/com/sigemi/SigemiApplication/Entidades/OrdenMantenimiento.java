@@ -27,7 +27,7 @@ public class OrdenMantenimiento {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TipoMantenimiento tipo;
-
+    
     @Column(length = 1000)
     private String descripcion;
     
