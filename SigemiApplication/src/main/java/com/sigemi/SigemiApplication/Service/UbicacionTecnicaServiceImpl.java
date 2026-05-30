@@ -150,7 +150,7 @@ public class UbicacionTecnicaServiceImpl implements UbicacionTecnicaService {
                     return new EntityNotFoundException("Ubicación no encontrada con ID: " + id);
                 });
 
-        ubicacion.setEstado(EstadoOperativo.FueraDeServicio);
+        ubicacion.setEstado(EstadoOperativo.FUERA_DE_SERVICIO);
         ubicacionRepository.save(ubicacion);
         log.info("Ubicación Técnica ID: {} ha sido desactivada exitosamente", id);
     }

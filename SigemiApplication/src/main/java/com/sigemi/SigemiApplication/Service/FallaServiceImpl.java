@@ -65,7 +65,7 @@ public class FallaServiceImpl implements FallaService {
         OrdenMantenimiento orden = new OrdenMantenimiento();
         
         orden.setEquipo(equipo);
-        orden.setTipo(TipoMantenimiento.Correctivo);
+        orden.setTipo(TipoMantenimiento.CORRECTIVO);
         orden.setSupervisor(reportadoPor); 
         orden.setFechaCreacion(LocalDate.now());
         //orden.setPrioridad(dto.getCriticidad()); 
@@ -74,8 +74,8 @@ public class FallaServiceImpl implements FallaService {
         
         TareaMantenimiento tarea = new TareaMantenimiento();
         tarea.setDescripcion("Atender falla: " + falla.getDescripcion());
-        tarea.setTipo(TipoMantenimiento.Correctivo);
-        tarea.setEstado(EstadoTarea.Pendiente);
+        tarea.setTipo(TipoMantenimiento.CORRECTIVO);
+        tarea.setEstado(EstadoTarea.PENDIENTE);
         tarea.setFechaEjecucion(LocalDate.now());
 
         if (dto.getTecnicoAsignadoId() != null) {

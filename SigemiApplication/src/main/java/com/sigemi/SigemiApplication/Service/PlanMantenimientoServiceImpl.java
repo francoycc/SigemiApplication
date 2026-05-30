@@ -130,13 +130,13 @@ public class PlanMantenimientoServiceImpl implements PlanMantenimientoService{
                 // 1. Crear la Orden de Mantenimiento
                 OrdenMantenimiento orden = new OrdenMantenimiento();
                 orden.setEquipo(plan.getEquipo());
-                orden.setTipo(TipoMantenimiento.Preventivo); //
+                orden.setTipo(TipoMantenimiento.PREVENTIVO); //
                 orden.setDescripcion(plan.getDescripcion());
                 orden.setPrioridad("Media"); // Prioridad por defecto para preventivos
                 orden.setFechaCreacion(hoy);
                 orden.setFechaInicio(hoy); // Se debe iniciar hoy
                 orden.setFechaFin(hoy.plusDays(7)); // Dar 1 semana para completarla (configurable)
-                orden.setEstado(EstadoOrden.Abierta); //
+                orden.setEstado(EstadoOrden.ABIERTA); //
                 
                 // Generar un código único
                 String codigo = String.format("WO-PREV-%d-%d", plan.getEquipo().getIdEquipo(), System.currentTimeMillis() % 10000);

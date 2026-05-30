@@ -15,4 +15,5 @@ public interface TareaMantenimientoService {
     
     // las tareas asignadas a un tecnico
     List<TareaDTO> listarPorTecnico(Long idTecnico);
+    List<TareaDTO> obtenerTareasAsignadas();
 }

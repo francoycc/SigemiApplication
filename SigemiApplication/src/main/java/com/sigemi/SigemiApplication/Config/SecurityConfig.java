@@ -10,6 +10,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -30,19 +31,21 @@ public class SecurityConfig {
                 // Permitir acceso libre al Login
                 .requestMatchers("/api/auth/**").permitAll()
                 
-                // IMPORTANTE: Permitir acceso libre a Ubicaciones y sus hijos
-                // Esto soluciona el error en ubicacionService.js
-                .requestMatchers("/api/ubicaciones/**").permitAll()
-                
-                // RECOMENDACIÓN DEV: Permitir todas las rutas de la API por ahora
-                // para que puedas desarrollar Equipos, Ordenes, etc. sin volver a tocar este archivo.
-                .requestMatchers("/api/**").permitAll()
-                
-                // Permitir acceso a recursos estáticos o de error
-                .requestMatchers("/error").permitAll()
-                
-                // Cualquier otra solicitud requerirá autenticación (si la implementas más adelante)
-                .anyRequest().authenticated() 
+                // Módulo de Equipos y Ubicaciones (Solo Supervisores y Administradores)
+                .requestMatchers(HttpMethod.POST, "/api/equipos/**", "/api/ubicaciones/**").hasAnyRole("SUPERVISOR", "ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/equipos/**", "/api/ubicaciones/**").hasAnyRole("SUPERVISOR", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/equipos/**", "/api/ubicaciones/**").hasAnyRole("SUPERVISOR", "ADMIN")
+
+                // Órdenes de Mantenimiento (Creación y asignación exclusiva de Supervisores)
+                .requestMatchers("/api/ordenes/nueva", "/api/ordenes/editar/**").hasRole("SUPERVISOR")
+
+                // Tareas y ejecución (Permitido para Operarios/Técnicos y Supervisores)
+                .requestMatchers("/api/tareas/**").hasAnyRole("OPERARIO", "SUPERVISOR", "ADMIN")
+
+                // Auditoría y Logs (Exclusivo Administradores)
+                .requestMatchers("/api/logs/**").hasRole("ADMIN")
+
+                .anyRequest().authenticated()
             );
 
         return http.build();

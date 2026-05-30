@@ -2,9 +2,9 @@ package com.sigemi.SigemiApplication.Enums;
 
 
 public enum EstadoOrden {
-    Abierta,
-    Asignada,
-    EnProceso,
-    Finalizada,
-    Cancelada
+    ABIERTA,
+    ASIGNADA,
+    EN_PROCESO,
+    FINALIZADA,
+    CANCELADA
 }

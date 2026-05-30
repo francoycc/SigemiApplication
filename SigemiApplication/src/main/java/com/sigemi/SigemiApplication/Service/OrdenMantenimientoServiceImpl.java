@@ -48,7 +48,7 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
         Usuario supervisor = usuarioRepository.findById(dto.getIdSupervisor())
             .orElseThrow(() -> new EntityNotFoundException("Supervisor no encontrado con ID: " + dto.getIdSupervisor()));
 
-        if (!RolUsuario.Supervisor.equals(supervisor.getRol().toString())) {
+        if (!RolUsuario.SUPERVISOR.equals(supervisor.getRol().toString())) {
             throw new BusinessException("Usuario no tiene rol de supervisor");
         }
 
@@ -74,7 +74,7 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
             Usuario tecnico = usuarioRepository.findById(tareaDto.getTecnicoId())
                     .orElseThrow(()-> new EntityNotFoundException("Tecnico no encontrado con ID: "+ tareaDto.getTecnicoId()));
 
-            if (!RolUsuario.Operario.equals(tecnico.getRol().toString())) {
+            if (!RolUsuario.OPERARIO.equals(tecnico.getRol().toString())) {
                 throw new BusinessException("Usuario no es técnico: " + tecnico.getIdUsuario());
             }
 
@@ -163,7 +163,7 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
         OrdenMantenimiento orden = ordenRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Orden no encontrada con el ID: " + id));
 
-        orden.setEstado(EstadoOrden.Finalizada);
+        orden.setEstado(EstadoOrden.FINALIZADA);
         orden.setFechaFin(LocalDate.now());
 
         OrdenMantenimiento finalizada = ordenRepository.save(orden);

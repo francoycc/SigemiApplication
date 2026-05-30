@@ -126,7 +126,7 @@ public class EquipoServiceImpl implements EquipoService {
         Equipo desactivado = equipoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("No existe equipo para el ID: " + id));
         
-        desactivado.setEstadoOperativo(EstadoOperativo.FueraDeServicio);
+        desactivado.setEstadoOperativo(EstadoOperativo.FUERA_DE_SERVICIO);
         desactivado.setActivo(false);
         
         equipoRepository.save(desactivado);

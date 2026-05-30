@@ -109,7 +109,7 @@ public class UbicacionTecnica {
     
     
     public boolean estaActiva() {
-        return estado == EstadoOperativo.Operativo;
+        return estado == EstadoOperativo.OPERATIVO;
     }
     @Override
     public String toString() {

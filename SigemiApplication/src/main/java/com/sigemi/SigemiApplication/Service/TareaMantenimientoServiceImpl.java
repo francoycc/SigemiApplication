@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -40,7 +42,7 @@ public class TareaMantenimientoServiceImpl implements TareaMantenimientoService 
         Usuario tecnico = usuarioRepository.findById(dto.getTecnicoId())
                 .orElseThrow(() -> new EntityNotFoundException("No existe el tecnico para el ID ingresado:" + dto.getTecnicoId()));
         
-        if (!RolUsuario.Operario.equals(tecnico.getRol().toString())) {
+        if (!RolUsuario.OPERARIO.equals(tecnico.getRol().toString())) {
                 throw new BusinessException("Usuario no tiene rol de tecnico: " + tecnico.getIdUsuario());
             }
         // validar orden
@@ -112,7 +114,7 @@ public class TareaMantenimientoServiceImpl implements TareaMantenimientoService 
         log.info("EstadoTarea con id {}: Pausada", id);
         TareaMantenimiento tarea = tareaMantenimientoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Tarea no encontrada"));
-        tarea.setEstado(EstadoTarea.Pausada);
+        tarea.setEstado(EstadoTarea.PAUSADA);
         tareaMantenimientoRepository.save(tarea);
     }
 
@@ -123,6 +125,26 @@ public class TareaMantenimientoServiceImpl implements TareaMantenimientoService 
         return tareasPorTecnico.stream()
                 .map(tarea -> tareaMapper.toDTO(tarea))
                 .collect(Collectors.toList());
+    }
+    
+    @Override
+    public List<TareaDTO> obtenerTareasAsignadas() {
+        // Obtenemos el usuario autenticado desde el token/sesión de Spring Security
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        // Obtenemos los detalles del usuario para validar su rol
+        Usuario usuario = usuarioRepository.findByNombreUsuario(username)
+            .orElseThrow(() -> new BusinessException("Usuario no encontrado"));
+
+        // Si es un operario/técnico, filtramos estrictamente por su ID en la base de datos
+        if (usuario.getRol() == RolUsuario.OPERARIO) {
+            List<TareaMantenimiento> tareas = tareaMantenimientoRepository.findByTecnico_IdUsuario(usuario.getIdUsuario());
+            return tareas.stream().map(tareaMapper::toDTO).collect(Collectors.toList());
+        }
+
+        // Si es Supervisor o Administrador, ve todas las tareas para gestión general
+        return tareaMantenimientoRepository.findAll().stream().map(tareaMapper::toDTO).collect(Collectors.toList());
     }
     
 }
