@@ -1,4 +1,4 @@
-package com.sigemi.SigemiApplication.Config;
+package com.sigemi.SigemiApplication.Security;
 
 import com.sigemi.SigemiApplication.Entidades.Usuario;
 import com.sigemi.SigemiApplication.Repository.UsuarioRepository;
