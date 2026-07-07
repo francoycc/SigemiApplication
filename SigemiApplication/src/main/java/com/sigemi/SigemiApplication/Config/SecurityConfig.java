@@ -30,20 +30,25 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Permitir acceso libre al Login
                 .requestMatchers("/api/auth/**").permitAll()
-                
+
                 // Módulo de Equipos y Ubicaciones (Solo Supervisores y Administradores)
-                .requestMatchers(HttpMethod.POST, "/api/equipos/**", "/api/ubicaciones/**").hasAnyRole("SUPERVISOR", "ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/equipos/**", "/api/ubicaciones/**").hasAnyRole("SUPERVISOR", "ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/equipos/**", "/api/ubicaciones/**").hasAnyRole("SUPERVISOR", "ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/equipos/**", "/api/ubicaciones/**").hasAnyAuthority("SUPERVISOR", "ADMINISTRADOR")
+                .requestMatchers(HttpMethod.PUT, "/api/equipos/**", "/api/ubicaciones/**").hasAnyAuthority("SUPERVISOR", "ADMINISTRADOR")
+                .requestMatchers(HttpMethod.DELETE, "/api/equipos/**", "/api/ubicaciones/**").hasAnyAuthority("SUPERVISOR", "ADMINISTRADOR")
+                .requestMatchers(HttpMethod.GET, "/api/equipos/**", "/api/ubicaciones/**").hasAnyAuthority("OPERARIO", "SUPERVISOR", "ADMINISTRADOR")
 
-                // Órdenes de Mantenimiento (Creación y asignación exclusiva de Supervisores)
-                .requestMatchers("/api/ordenes/nueva", "/api/ordenes/editar/**").hasRole("SUPERVISOR")
+                // Órdenes de Mantenimiento (Planificación)
+                .requestMatchers("/api/ordenes/nueva", "/api/ordenes/editar/**").hasAuthority("SUPERVISOR")
+                .requestMatchers(HttpMethod.GET, "/api/ordenes/**").hasAnyAuthority("OPERARIO", "SUPERVISOR", "ADMINISTRADOR")
 
-                // Tareas y ejecución (Permitido para Operarios/Técnicos y Supervisores)
-                .requestMatchers("/api/tareas/**").hasAnyRole("OPERARIO", "SUPERVISOR", "ADMIN")
+                // Tareas Técnicas y Ejecución
+                .requestMatchers("/api/tareas/**").hasAnyAuthority("OPERARIO", "SUPERVISOR", "ADMINISTRADOR")
+
+                // Acceso general para cargar selectores de usuarios en formularios
+                .requestMatchers("/api/usuarios/**").hasAnyAuthority("SUPERVISOR", "ADMINISTRADOR")
 
                 // Auditoría y Logs (Exclusivo Administradores)
-                .requestMatchers("/api/logs/**").hasRole("ADMIN")
+                .requestMatchers("/api/logs/**").hasAuthority("ADMINISTRADOR")
 
                 .anyRequest().authenticated()
             );
