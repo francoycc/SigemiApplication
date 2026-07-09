@@ -33,7 +33,6 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             
             // 3. MEJORA CRÍTICA: Definir la política de sesión como STATELESS (Sin Estado)
-            // Esto evita que Spring intente crear sesiones HTTP en el servidor y optimiza la memoria RAM.
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )

@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class EquipoServiceImpl implements EquipoService {
     
-    // Solución 1: Se agrega la palabra reservada 'final' para que Lombok inyecte las dependencias
     private final EquipoRepository equipoRepository;
     private final UbicacionTecnicaRepository ubicacionRepository;
     private final EquipoMapper mapper;
