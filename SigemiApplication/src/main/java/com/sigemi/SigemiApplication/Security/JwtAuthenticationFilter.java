@@ -29,28 +29,39 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String username;
 
-        // Si no hay token o no empieza con Bearer, sigue la cadena (Spring lo bloqueará luego si la ruta es protegida)
+        // 1. Verificación inicial de cabecera
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         jwt = authHeader.substring(7);
-        username = jwtUtil.extractUsername(jwt);
 
-        // Si hay un usuario en el token y aún no está autenticado en el contexto actual
+        try {
+            username = jwtUtil.extractUsername(jwt);
+        } catch (Exception e) {
+            System.out.println("❌ ERROR JWT: Token malformado o expirado.");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // 2. Si el username es válido y no hay sesión aún
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
             if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
+
+                // Imprimimos en consola de Spring para confirmar que leyó bien el rol
+                System.out.println("✅ JWT ACEPTADO. Usuario: " + username + " | Rol en Spring: " + userDetails.getAuthorities());
+
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                
-                // Inyectamos el usuario validado en el contexto de Spring Security
+
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
         filterChain.doFilter(request, response);
     }
+    
 }
