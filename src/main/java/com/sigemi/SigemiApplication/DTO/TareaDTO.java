@@ -22,6 +22,9 @@ public class TareaDTO {
     @NotBlank
     private String tecnicoNombre; 
 
+    public TareaDTO() {
+    }
+
     public Long getIdTarea() {
         return idTarea;
     }

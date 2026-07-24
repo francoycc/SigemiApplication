@@ -36,6 +36,9 @@ public class OrdenDTO {
     private String descripcion;
 
     
+    public OrdenDTO() {
+    }
+
 
     public Long getIdOrden() {
         return idOrden;

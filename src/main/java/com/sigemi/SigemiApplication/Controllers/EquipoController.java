@@ -26,7 +26,7 @@ public class EquipoController {
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevoEquipo);
     }
     
-    @GetMapping("/{id}")
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<EquipoDTO> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(equipoService.buscarPorId(id));
     }

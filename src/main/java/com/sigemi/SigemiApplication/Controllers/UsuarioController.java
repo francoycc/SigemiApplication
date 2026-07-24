@@ -20,36 +20,6 @@ public class UsuarioController {
     public UsuarioController(UsuarioService userService){
         this.usuarioService = userService;
     }
-//    @PostMapping
-//    public Usuario crear(@RequestBody Usuario usuario) {
-//        return usuarioService.crearUsuario(usuario);
-//    }
-//
-//    @PutMapping("/{id}")
-//    public Usuario actualizar(@PathVariable Long id, @RequestBody Usuario usuario) {
-//        return usuarioService.actualizarUsuario(id, usuario);
-//    }
-//
-//    @PutMapping("/deshabilitar/{id}")
-//    public void deshabilitar(@PathVariable Long id) {
-//        usuarioService.deshabilitarUsuario(id);
-//    }
-//
-//    @GetMapping("/{id}")
-//    public Usuario obtenerPorId(@PathVariable Long id) {
-//        return usuarioService.obtenerPorId(id);
-//    }
-//    
-//    @GetMapping("/{nombre}")
-//    public Usuario obtenerPorNombreDeUsuario(@PathVariable String nombre){
-//        return usuarioService.obtenerPorNombreDeUsuario(nombre);
-//    }
-//
-//    @GetMapping
-//    public List<Usuario> listar() {
-//        return usuarioService.listarUsuarios();
-//    }
-    
     
     @PostMapping
     public ResponseEntity<UsuarioDTO> crear(@Valid @RequestBody UsuarioDTO dto) {

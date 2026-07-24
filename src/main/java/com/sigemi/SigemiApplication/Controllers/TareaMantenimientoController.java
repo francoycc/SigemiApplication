@@ -22,36 +22,6 @@ public class TareaMantenimientoController {
     public TareaMantenimientoController(TareaMantenimientoService tservice){
         this.tareaService = tservice;
     };
-//    @PostMapping
-//    public TareaMantenimiento crear(@RequestBody TareaMantenimiento tarea) {
-//        return tareaService.crearTarea(tarea);
-//    }
-//
-//    @GetMapping
-//    public List<TareaMantenimiento> listarTodas() {
-//        return tareaService.listarTareas();
-//    }
-//
-//    @GetMapping("/orden/{idOrden}")
-//    public List<TareaMantenimiento> listarPorOrden(@PathVariable Long idOrden) {
-//        return tareaService.listarPorOrden(idOrden);
-//    }
-//
-//    @GetMapping("/{id}")
-//    public TareaMantenimiento obtenerPorId(@PathVariable Long id) {
-//        return tareaService.obtenerPorId(id);
-//    }
-//
-//    @PutMapping("/{id}")
-//    public TareaMantenimiento actualizar(@PathVariable Long id, @RequestBody TareaMantenimiento tarea) {
-//        return tareaService.actualizarTarea(id, tarea);
-//    }
-//
-//    @PutMapping("/{id}/pausar")
-//    public void pausar(@PathVariable Long id) {
-//        tareaService.pausarTarea(id);
-//    }
-    
     
     @PostMapping
     public ResponseEntity<TareaDTO> crearTarea(@Valid @RequestBody TareaDTO dto) {

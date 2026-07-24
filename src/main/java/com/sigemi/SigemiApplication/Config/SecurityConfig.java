@@ -44,7 +44,9 @@ public class SecurityConfig {
 
                 // Autenticación libre (Registro / Login)
                 .requestMatchers("/api/auth/**").permitAll()
-
+                    
+                .requestMatchers("/error").permitAll() // <-- OBLIGATORIO: Permite que Spring Security muestre los errores reales
+                    .anyRequest().authenticated()
                 // Permisos de Lectura Globales (Selects y catálogos requeridos por los formularios)
                 .requestMatchers(HttpMethod.GET, "/api/usuarios/**", "/api/repuestos/**", "/api/ubicaciones/**", "/api/equipos/**")
                     .hasAnyAuthority("ADMINISTRADOR", "ROLE_ADMINISTRADOR", "SUPERVISOR", "ROLE_SUPERVISOR", "OPERARIO", "ROLE_OPERARIO")
