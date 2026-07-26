@@ -13,7 +13,7 @@ public interface OrdenMantenimientoService {
 //    OrdenMantenimiento obtenerPorId(Long id);
 //    OrdenMantenimiento actualizarOrdenMantenimiento(Long id, OrdenMantenimiento orden);
 //    void finalizarOrdenMantenimiento(Long id);
-    OrdenDTO crearOrden(OrdenDTO dto, String usuarioSupervisor);
+    OrdenDTO crearOrden(OrdenDTO dto);
     
     OrdenDTO obtenerPorId(Long id);
 

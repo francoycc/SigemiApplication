@@ -42,7 +42,7 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
 
     @Override
     @Transactional
-    public OrdenDTO crearOrden(OrdenDTO dto, String usuarioCreador) {
+    public OrdenDTO crearOrden(OrdenDTO dto) {
         
         // Validar supervisor
         Usuario supervisor = usuarioRepository.findById(dto.getIdSupervisor())

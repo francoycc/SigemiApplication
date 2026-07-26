@@ -27,9 +27,8 @@ public class OrdenMantenimientoController {
 
     
     @PostMapping
-    public ResponseEntity<OrdenDTO> crearOrden(@Valid @RequestBody OrdenDTO dto, 
-            @RequestParam String usuarioCreador) {
-        OrdenDTO nuevaOrden = ordenMantenimientoService.crearOrden(dto, usuarioCreador);
+    public ResponseEntity<OrdenDTO> crearOrden(@Valid @RequestBody OrdenDTO dto) {
+        OrdenDTO nuevaOrden = ordenMantenimientoService.crearOrden(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaOrden);
     }
     

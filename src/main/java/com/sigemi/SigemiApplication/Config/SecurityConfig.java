@@ -32,7 +32,7 @@ public class SecurityConfig {
             // 2. Configurar CORS: Enlaza el Bean de abajo para aceptar peticiones desde React
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             
-            // 3. MEJORA CRÍTICA: Definir la política de sesión como STATELESS (Sin Estado)
+            // 3. Política de sesión STATELESS (Sin Estado)
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
@@ -42,11 +42,10 @@ public class SecurityConfig {
                 // Permite que el navegador consulte los CORS libremente (Preflight requests)
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                // Autenticación libre (Registro / Login)
+                // Autenticación libre (Registro / Login) y manejo de errores
                 .requestMatchers("/api/auth/**").permitAll()
-                    
-                .requestMatchers("/error").permitAll() // <-- OBLIGATORIO: Permite que Spring Security muestre los errores reales
-                    .anyRequest().authenticated()
+                .requestMatchers("/error").permitAll()
+
                 // Permisos de Lectura Globales (Selects y catálogos requeridos por los formularios)
                 .requestMatchers(HttpMethod.GET, "/api/usuarios/**", "/api/repuestos/**", "/api/ubicaciones/**", "/api/equipos/**")
                     .hasAnyAuthority("ADMINISTRADOR", "ROLE_ADMINISTRADOR", "SUPERVISOR", "ROLE_SUPERVISOR", "OPERARIO", "ROLE_OPERARIO")
@@ -66,11 +65,11 @@ public class SecurityConfig {
                 // Auditoría y Logs (Exclusivo Administradores)
                 .requestMatchers("/api/logs/**").hasAnyAuthority("ADMINISTRADOR", "ROLE_ADMINISTRADOR")
 
-                // Cualquier otra ruta no especificada requerirá autenticación
+                // OBLIGATORIO: anyRequest() debe ser SIEMPRE la ÚLTIMA instrucción
                 .anyRequest().authenticated()
             );
 
-        // 5. MEJORA CRÍTICA: Enganchar tu filtro de autenticación (JWT) antes del procesador por defecto de Spring.
+        // 5. Enganchar tu filtro JWT antes del procesador por defecto de Spring
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
