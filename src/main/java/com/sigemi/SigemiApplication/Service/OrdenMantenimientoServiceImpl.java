@@ -43,39 +43,39 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
     @Override
     @Transactional
     public OrdenDTO crearOrden(OrdenDTO dto) {
-        
-        // Validar supervisor
+
+        // 1. Validar supervisor
         Usuario supervisor = usuarioRepository.findById(dto.getIdSupervisor())
             .orElseThrow(() -> new EntityNotFoundException("Supervisor no encontrado con ID: " + dto.getIdSupervisor()));
 
-        if (!RolUsuario.SUPERVISOR.equals(supervisor.getRol().toString())) {
-            throw new BusinessException("Usuario no tiene rol de supervisor");
+        String rolSupStr = supervisor.getRol() != null ? supervisor.getRol().toString() : "";
+        if (!"SUPERVISOR".equalsIgnoreCase(rolSupStr) && !"ROLE_SUPERVISOR".equalsIgnoreCase(rolSupStr)) {
+            throw new BusinessException("El usuario seleccionado no posee rol de SUPERVISOR (ID: " + supervisor.getIdUsuario() + ")");
         }
 
-        // validar equipo
+        // 2. Validar equipo
         Equipo equipo = equipoRepository.findById(dto.getIdEquipo())
             .orElseThrow(() -> new EntityNotFoundException("Equipo no encontrado con ID: " + dto.getIdEquipo()));
 
-        // Crear oden
+        // 3. Crear orden
         OrdenMantenimiento orden = new OrdenMantenimiento();
-        
-        orden.setTipo(TipoMantenimiento.valueOf(dto.getTipo()));
+        orden.setTipo(TipoMantenimiento.valueOf(dto.getTipo().toUpperCase()));
         orden.setEquipo(equipo);
         orden.setSupervisor(supervisor);
         orden.setFechaCreacion(LocalDate.now());
         orden.setFechaFin(dto.getFechaPrevistaEjecucion());
         orden.setPrioridad(dto.getPrioridad());
         orden.setDescripcion(dto.getDescripcion());
-        orden.setEstado(EstadoOrden.valueOf(dto.getEstadoOrden()));
+        orden.setEstado(EstadoOrden.valueOf(dto.getEstadoOrden().toUpperCase()));
 
-
-        // crear tareas y asociar
+        // 4. Crear tareas y asociar
         for (TareaDTO tareaDto : dto.getTareas()) {
             Usuario tecnico = usuarioRepository.findById(tareaDto.getTecnicoId())
-                    .orElseThrow(()-> new EntityNotFoundException("Tecnico no encontrado con ID: "+ tareaDto.getTecnicoId()));
+                .orElseThrow(() -> new EntityNotFoundException("Técnico no encontrado con ID: " + tareaDto.getTecnicoId()));
 
-            if (!RolUsuario.OPERARIO.equals(tecnico.getRol().toString())) {
-                throw new BusinessException("Usuario no es técnico: " + tecnico.getIdUsuario());
+            String rolTecStr = tecnico.getRol() != null ? tecnico.getRol().toString() : "";
+            if (!"OPERARIO".equalsIgnoreCase(rolTecStr) && !"ROLE_OPERARIO".equalsIgnoreCase(rolTecStr) && !"TECNICO".equalsIgnoreCase(rolTecStr)) {
+                throw new BusinessException("El usuario asignado a la tarea no es técnico/operario (ID: " + tecnico.getIdUsuario() + ")");
             }
 
             TareaMantenimiento tarea = new TareaMantenimiento();
@@ -83,27 +83,28 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
             tarea.setEstado(EstadoTarea.valueOf(tareaDto.getEstado()));
             tarea.setTecnico(tecnico);
             tarea.setFechaEjecucion(LocalDate.now());
-            tarea.setTipo(orden.getTipo()); 
-            // agrega y setea la relación 
+            tarea.setTipo(TipoMantenimiento.valueOf(orden.getTipo().toString().toUpperCase())); 
+
+            // Asocia bidireccionalmente la tarea a la orden
             orden.addTarea(tarea);
         }
 
-        // persistir (con tareas)
+        // Persistir orden con tareas en cascada
         OrdenMantenimiento ordenGuardada = ordenRepository.save(orden);
+
         String codigo = "WO-" + String.format("%03d", equipo.getIdEquipo())
                     + "-" + String.format("%05d", ordenGuardada.getIdOrden());
-        orden.setCodigoOrden(codigo);
-        
-        ordenGuardada = ordenRepository.save(ordenGuardada);
-        // publicar evento para acciones asincronas 
-        //eventPublisher.publishEvent(new OrdenCreadaEvent(this, ordenGuardada.getId()));
+        ordenGuardada.setCodigoOrden(codigo);
 
-        // mapear respuesta
+        ordenGuardada = ordenRepository.save(ordenGuardada);
+
+        // Mapear respuesta
         OrdenDTO resp = mapper.toDto(ordenGuardada);
         List<TareaDTO> tareasDto = ordenGuardada.getTareas().stream()
             .map(mapperTarea::toDTO)
             .collect(Collectors.toList());
         resp.setTareas(tareasDto);
+
         return resp;
     }
 
@@ -163,7 +164,7 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
         OrdenMantenimiento orden = ordenRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Orden no encontrada con el ID: " + id));
 
-        orden.setEstado(EstadoOrden.FINALIZADA);
+        orden.setEstado(EstadoOrden.COMPLETADA);
         orden.setFechaFin(LocalDate.now());
 
         OrdenMantenimiento finalizada = ordenRepository.save(orden);

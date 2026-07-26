@@ -136,7 +136,7 @@ public class PlanMantenimientoServiceImpl implements PlanMantenimientoService{
                 orden.setFechaCreacion(hoy);
                 orden.setFechaInicio(hoy); // Se debe iniciar hoy
                 orden.setFechaFin(hoy.plusDays(7)); // Dar 1 semana para completarla (configurable)
-                orden.setEstado(EstadoOrden.ABIERTA); //
+                orden.setEstado(EstadoOrden.PENDIENTE); //
                 
                 // Generar un código único
                 String codigo = String.format("WO-PREV-%d-%d", plan.getEquipo().getIdEquipo(), System.currentTimeMillis() % 10000);
