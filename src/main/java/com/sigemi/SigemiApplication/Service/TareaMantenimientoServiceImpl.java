@@ -38,29 +38,34 @@ public class TareaMantenimientoServiceImpl implements TareaMantenimientoService 
     @Transactional
     public TareaDTO crearTarea(TareaDTO dto) {
         log.info("Iniciando transacción para crear nueva Tarea de Mantenimiento");
-        // validar usuario
+
+        // 1. Validar usuario técnico
         Usuario tecnico = usuarioRepository.findById(dto.getTecnicoId())
-                .orElseThrow(() -> new EntityNotFoundException("No existe el tecnico para el ID ingresado:" + dto.getTecnicoId()));
-        
-        if (!RolUsuario.OPERARIO.equals(tecnico.getRol().toString())) {
-                throw new BusinessException("Usuario no tiene rol de tecnico: " + tecnico.getIdUsuario());
-            }
-        // validar orden
+                .orElseThrow(() -> new EntityNotFoundException("No existe el técnico para el ID ingresado: " + dto.getTecnicoId()));
+
+        String rolTecnicoStr = tecnico.getRol() != null ? tecnico.getRol().toString() : "";
+        if (!"OPERARIO".equalsIgnoreCase(rolTecnicoStr) && 
+            !"ROLE_OPERARIO".equalsIgnoreCase(rolTecnicoStr) && 
+            !"TECNICO".equalsIgnoreCase(rolTecnicoStr)) {
+            throw new BusinessException("El usuario seleccionado no posee rol de técnico/operario: " + tecnico.getIdUsuario());
+        }
+
+        // 2. Validar orden
         OrdenMantenimiento orden = ordenRepository.findById(dto.getOrdenId())
-                .orElseThrow(() -> new EntityNotFoundException("Orden de mantenimiento no encontrada"));
-        
+                .orElseThrow(() -> new EntityNotFoundException("Orden de mantenimiento no encontrada con ID: " + dto.getOrdenId()));
+
         TareaMantenimiento tarea = tareaMapper.toEntity(dto);
         tarea.setTecnico(tecnico);
         tarea.setOrden(orden);
         tarea.setTipo(TipoMantenimiento.valueOf(dto.getTipo()));
         tarea.setEstado(EstadoTarea.valueOf(dto.getEstado()));
         tarea.setFechaEjecucion(LocalDate.now());
-        
+
         TareaMantenimiento guardada = tareaMantenimientoRepository.save(tarea);
-        
+
         return tareaMapper.toDTO(guardada);
     }
-
+    
     @Override
     public List<TareaDTO> listarPorOrden(Long idOrden) {
         log.info("Listado de Tareas por Orden de mantenimiento con id: {} ", idOrden);
@@ -91,22 +96,36 @@ public class TareaMantenimientoServiceImpl implements TareaMantenimientoService 
     @Transactional
     public TareaDTO actualizarTarea(Long id, TareaDTO dto) {
         log.info("Iniciando actualización para la Tarea ID: {}", id);
-        TareaMantenimiento tarea = tareaMantenimientoRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Tarea no encontrada"));
-        
-        tarea.setDescripcion(dto.getDescripcion());
-        tarea.setEstado(EstadoTarea.valueOf(dto.getEstado()));
-        tarea.setTipo(TipoMantenimiento.valueOf(dto.getTipo()));
-        tarea.setTiempoInvertidoHoras(dto.getTiempoInvertidoHoras());
 
-        // validar tecnico si cambio
-        if (dto.getTecnicoId() != null && !tarea.getTecnico().getIdUsuario().equals(dto.getTecnicoId())) {
-            Usuario tecnico = usuarioRepository.findById(dto.getTecnicoId())
-                    .orElseThrow(() -> new EntityNotFoundException("Técnico no encontrado"));
-            tarea.setTecnico(tecnico);
+        TareaMantenimiento tarea = tareaMantenimientoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("No existe la tarea para el ID ingresado: " + id));
+
+        if (dto.getDescripcion() != null) {
+            tarea.setDescripcion(dto.getDescripcion());
+        }
+        if (dto.getTiempoInvertidoHoras() != null) {
+            tarea.setTiempoInvertidoHoras(dto.getTiempoInvertidoHoras());
         }
 
-        return tareaMapper.toDTO(tareaMantenimientoRepository.save(tarea));
+        if (dto.getEstado() != null && !dto.getEstado().trim().isEmpty()) {
+            try {
+                tarea.setEstado(EstadoTarea.valueOf(dto.getEstado().toUpperCase().trim()));
+            } catch (IllegalArgumentException e) {
+                log.warn("Estado desconocido recibido: {}. Se conservará el estado actual.", dto.getEstado());
+            }
+        }
+
+        if (dto.getTipo() != null && !dto.getTipo().trim().isEmpty()) {
+            try {
+                tarea.setTipo(TipoMantenimiento.valueOf(dto.getTipo().toUpperCase().trim()));
+            } catch (IllegalArgumentException e) {
+                log.warn("Tipo desconocido recibido: {}", dto.getTipo());
+            }
+        }
+
+        // Guardar cambios
+        TareaMantenimiento guardada = tareaMantenimientoRepository.save(tarea);
+        return tareaMapper.toDTO(guardada);
     }
 
     @Override

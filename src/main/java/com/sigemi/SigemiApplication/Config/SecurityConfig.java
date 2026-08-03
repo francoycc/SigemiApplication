@@ -12,6 +12,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,12 @@ public class SecurityConfig {
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthFilter;
-
+    
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -61,7 +68,12 @@ public class SecurityConfig {
 
                 // Tareas Técnicas y Ejecución
                 .requestMatchers("/api/tareas/**").hasAnyAuthority("OPERARIO", "ROLE_OPERARIO", "SUPERVISOR", "ROLE_SUPERVISOR", "ADMINISTRADOR", "ROLE_ADMINISTRADOR")
-
+                    
+                // Usuarios
+                .requestMatchers(HttpMethod.POST, "/api/usuarios/**").hasAnyAuthority("ADMINISTRADOR", "ROLE_ADMINISTRADOR")
+                .requestMatchers(HttpMethod.PUT, "/api/usuarios/**").hasAnyAuthority("ADMINISTRADOR", "ROLE_ADMINISTRADOR")
+                .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**").hasAnyAuthority("ADMINISTRADOR", "ROLE_ADMINISTRADOR")
+                
                 // Auditoría y Logs (Exclusivo Administradores)
                 .requestMatchers("/api/logs/**").hasAnyAuthority("ADMINISTRADOR", "ROLE_ADMINISTRADOR")
 

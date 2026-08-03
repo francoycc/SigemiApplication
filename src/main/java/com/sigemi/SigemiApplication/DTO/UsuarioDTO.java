@@ -17,6 +17,8 @@ public class UsuarioDTO {
     private String rol;
     
     private Long telefono;
+    
+    private Boolean activo;
 
     public Long getIdUsuario() {
         return idUsuario;
@@ -82,4 +84,11 @@ public class UsuarioDTO {
         this.telefono = telefono;
     }
     
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
 }

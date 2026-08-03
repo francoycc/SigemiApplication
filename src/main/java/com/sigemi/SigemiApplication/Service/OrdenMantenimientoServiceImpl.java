@@ -90,6 +90,7 @@ public class OrdenMantenimientoServiceImpl implements OrdenMantenimientoService 
         }
 
         // Persistir orden con tareas en cascada
+        orden.setCodigoOrden("WO-PROVISORIO");
         OrdenMantenimiento ordenGuardada = ordenRepository.save(orden);
 
         String codigo = "WO-" + String.format("%03d", equipo.getIdEquipo())

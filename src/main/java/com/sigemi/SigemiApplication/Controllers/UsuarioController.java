@@ -1,7 +1,6 @@
 package com.sigemi.SigemiApplication.Controllers;
 
 import com.sigemi.SigemiApplication.DTO.UsuarioDTO;
-import com.sigemi.SigemiApplication.Entidades.Usuario;
 import com.sigemi.SigemiApplication.Service.UsuarioService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -43,7 +42,7 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(actualizado);
     }
 
-    @DeleteMapping("/deshabilitar/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deshabilitar(@PathVariable Long id) {
         usuarioService.deshabilitarUsuario(id);
         return ResponseEntity.noContent().build();
